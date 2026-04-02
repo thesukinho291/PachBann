@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A PachBann Web Design cria sites modernos, rápidos e responsivos para empresas de todos os segmentos. Solicite seu orçamento!">
+    <meta name="author" content="PachBann Web Design">
+    <meta property="og:title" content="PachBann Web Design">
+    <meta property="og:description" content="Transformamos sua visão em presença digital.">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#0f0f0f">
+
+    <title>PachBann Web Design | Criação de Sites Profissionais</title>
+
+    <link rel="icon" type="image/png" href="logo2.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- NAVBAR -->
+    <header class="navbar" id="navbar">
+        <div class="navbar-container">
+            <a href="#inicio" class="navbar-logo">
+                <span class="logo-text">PachBann</span>
+            </a>
+            <nav class="navbar-menu" id="navbar-menu">
+                <a href="#sobre" class="nav-link">Sobre</a>
+                <a href="#servicos" class="nav-link">Serviços</a>
+                <a href="#portfolio" class="nav-link">Portfolio</a>
+                <a href="#equipe" class="nav-link">Equipe</a>
+                <a href="#contato" class="nav-link">Contato</a>
+            </nav>
+            <button class="hamburger" id="hamburger" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <!-- HERO -->
+        <section class="hero" id="inicio">
+            <div class="hero-content">
+                <p class="hero-badge" data-editable="hero" data-field="badge">Web Design & Desenvolvimento</p>
+                <h1 class="hero-title" data-editable="hero" data-field="titulo">Transformamos sua visão em presença digital</h1>
+                <p class="hero-subtitle" data-editable="hero" data-field="subtitulo">Criamos sites modernos, rápidos e eficientes que geram resultados reais para o seu negócio.</p>
+                <div class="hero-actions">
+                    <a href="#contato" class="btn btn-primary">Fale Conosco</a>
+                    <a href="#portfolio" class="btn btn-ghost">Ver Portfolio</a>
+                </div>
+            </div>
+            <div class="hero-scroll">
+                <span>Scroll</span>
+                <div class="scroll-line"></div>
+            </div>
+        </section>
+
+        <!-- SOBRE -->
+        <section class="section" id="sobre">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-label" data-editable="sobre" data-field="label">Sobre</span>
+                    <h2 class="section-title" data-editable="sobre" data-field="titulo">Quem somos</h2>
+                </div>
+                <div class="about-grid">
+                    <div class="about-content">
+                        <p data-editable="sobre" data-field="texto1">A PachBann Web Design nasceu em 2026 com uma missão clara: entregar sites modernos, rápidos e eficientes que realmente funcionam para os negócios dos nossos clientes.</p>
+                        <p data-editable="sobre" data-field="texto2">Combinamos design criativo com tecnologia de ponta para criar presença digital que converte visitantes em clientes.</p>
+                    </div>
+                    <div class="about-stats">
+                        <div class="stat-item">
+                            <span class="stat-number" data-editable="sobre" data-field="stat1Valor" data-type="number">50</span>
+                            <span class="stat-label">Projetos</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" data-editable="sobre" data-field="stat2Valor" data-type="number">100</span>
+                            <span class="stat-suffix">%</span>
+                            <span class="stat-label">Satisfação</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="features-grid" id="features-grid">
+                    <!-- Features carregadas do Firebase -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SERVIÇOS -->
+        <section class="section section-alt" id="servicos">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-label" data-editable="servicos" data-field="label">O que fazemos</span>
+                    <h2 class="section-title" data-editable="servicos" data-field="titulo">Serviços</h2>
+                </div>
+                <div class="services-grid" id="services-grid">
+                    <!-- Serviços carregados do Firebase -->
+                </div>
+            </div>
+        </section>
+
+        <!-- PORTFÓLIO -->
+        <section class="section" id="portfolio">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-label" data-editable="portfolio" data-field="label">Trabalhos recentes</span>
+                    <h2 class="section-title" data-editable="portfolio" data-field="titulo">Portfolio</h2>
+                </div>
+                <div class="portfolio-grid" id="portfolio-grid">
+                    <!-- Portfolio carregado do Firebase -->
+                </div>
+            </div>
+        </section>
+
+        <!-- EQUIPE -->
+        <section class="section section-alt" id="equipe">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-label" data-editable="equipe" data-field="label">Nossa equipe</span>
+                    <h2 class="section-title" data-editable="equipe" data-field="titulo">Equipe</h2>
+                </div>
+                <div class="team-grid" id="team-grid">
+                    <!-- Equipe carregada do Firebase -->
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTATO -->
+        <section class="section section-alt" id="contato">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-label" data-editable="contato" data-field="label">Entre em contato</span>
+                    <h2 class="section-title" data-editable="contato" data-field="titulo">Fale Conosco</h2>
+                    <p class="section-desc" data-editable="contato" data-field="subtitulo">Vamos discutir seu próximo projeto?</p>
+                </div>
+                <div class="contact-grid">
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <span class="contact-label">Telefone</span>
+                            <a href="tel:+5515997984583" data-editable="contato" data-field="telefone">(15) 99798-4583</a>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-label">E-mail</span>
+                            <a href="mailto:contato@pachbann.com" data-editable="contato" data-field="email">contato@pachbann.com</a>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-label">Localização</span>
+                            <span data-editable="contato" data-field="localizacao">Sorocaba, São Paulo</span>
+                        </div>
+                        <a href="https://wa.me/5515997984583" target="_blank" class="btn btn-whatsapp">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                            </svg>
+                            WhatsApp
+                        </a>
+                    </div>
+                    <form class="contact-form" id="contact-form">
+                        <div class="form-group">
+                            <input type="text" name="nome" placeholder="Nome" required class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <input type="email" name="email" placeholder="E-mail" required class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <input type="tel" name="telefone" placeholder="Telefone" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <select name="tipoProjeto" class="form-input form-select">
+                                <option value="">Tipo de projeto</option>
+                                <option value="Site Institucional">Site Institucional</option>
+                                <option value="Landing Page">Landing Page</option>
+                                <option value="E-commerce">E-commerce</option>
+                                <option value="Sistema Web">Sistema Web</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <textarea name="mensagem" placeholder="Mensagem" rows="4" required class="form-input"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full" id="submit-btn">
+                            <span>Enviar</span>
+                            <svg class="spinner" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="31.4 31.4"/></svg>
+                        </button>
+                        <div class="form-message success" id="form-success">Mensagem enviada com sucesso!</div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="footer-logo">PachBann</span>
+                    <p data-editable="footer" data-field="tagline">Transformamos sua visão em presença digital.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#sobre">Sobre</a>
+                    <a href="#servicos">Serviços</a>
+                    <a href="#portfolio">Portfolio</a>
+                    <a href="#equipe">Equipe</a>
+                    <a href="#contato">Contato</a>
+                </div>
+                <div class="footer-social">
+                    <a href="#" aria-label="Instagram" data-editable="footer" data-field="instagram">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="2" y="2" width="20" height="20" rx="5"/>
+                            <circle cx="12" cy="12" r="4"/>
+                            <circle cx="18" cy="6" r="1"/>
+                        </svg>
+                    </a>
+                    <a href="#" aria-label="LinkedIn" data-editable="footer" data-field="linkedin">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="2" y="2" width="20" height="20" rx="2"/>
+                            <path d="M8 11v5M8 8v.01M12 16v-5a2 2 0 014 0v5"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 PachBann Web Design</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ADMIN PANEL -->
+    <div class="admin-panel" id="admin-panel">
+        <div class="admin-header">
+            <h3>Painel Admin</h3>
+            <button class="admin-close" id="admin-close">&times;</button>
+        </div>
+        <div class="admin-tabs">
+            <button class="admin-tab active" data-tab="content">Conteúdo</button>
+            <button class="admin-tab" data-tab="leads">Leads</button>
+            <button class="admin-tab" data-tab="settings">Config</button>
+        </div>
+        <div class="admin-content" id="admin-content">
+            <!-- Aba de conteúdo -->
+            <div class="admin-pane active" id="pane-content">
+                <div class="admin-section">
+                    <h4>Selecione uma seção para editar:</h4>
+                    <div class="admin-section-list" id="section-list">
+                        <button class="section-btn active" data-section="hero">Hero</button>
+                        <button class="section-btn" data-section="sobre">Sobre</button>
+                        <button class="section-btn" data-section="servicos">Serviços</button>
+                        <button class="section-btn" data-section="portfolio">Portfolio</button>
+                        <button class="section-btn" data-section="equipe">Equipe</button>
+                        <button class="section-btn" data-section="contato">Contato</button>
+                        <button class="section-btn" data-section="footer">Footer</button>
+                    </div>
+                </div>
+                <div class="admin-editor" id="admin-editor">
+                    <!-- Editor carregado dinamicamente -->
+                </div>
+            </div>
+            <!-- Aba de leads -->
+            <div class="admin-pane" id="pane-leads">
+                <div class="leads-list" id="leads-list">
+                    <p class="no-leads">Nenhum lead ainda.</p>
+                </div>
+            </div>
+            <!-- Aba de configurações -->
+            <div class="admin-pane" id="pane-settings">
+                <div class="admin-field">
+                    <label>Firebase API Key:</label>
+                    <input type="text" id="firebase-api-key" placeholder="Cole sua API Key">
+                </div>
+                <div class="admin-field">
+                    <label>Firebase Project ID:</label>
+                    <input type="text" id="firebase-project-id" placeholder="seu-projeto">
+                </div>
+                <div class="admin-field">
+                    <label>Firebase Auth Domain:</label>
+                    <input type="text" id="firebase-auth-domain" placeholder="seu-projeto.firebaseapp.com">
+                </div>
+                <div class="admin-field">
+                    <label>Firebase App ID:</label>
+                    <input type="text" id="firebase-app-id" placeholder="1:xxx:web:xxx">
+                </div>
+                <button class="btn btn-primary btn-full" id="save-firebase-config">Salvar Configuração</button>
+                <p class="admin-help">Após salvar, recarregue a página para aplicar.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Toggle Button (hidden initially) -->
+    <button class="admin-toggle" id="admin-toggle" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12.22 2h-.44a2 2 0 00-2 2v.18a2 2 0 01-1 1.73l-.43.25a2 2 0 01-2 0l-.15-.08a2 2 0 00-2.73.73l-.22.38a2 2 0 00.73 2.73l.15.1a2 2 0 011 1.72v.51a2 2 0 01-1 1.74l-.15.09a2 2 0 00-.73 2.73l.22.38a2 2 0 002.73.73l.15-.08a2 2 0 012 0l.43.25a2 2 0 011 1.73V20a2 2 0 002 2h.44a2 2 0 002-2v-.18a2 2 0 011-1.73l.43-.25a2 2 0 012 0l.15.08a2 2 0 002.73-.73l.22-.39a2 2 0 00-.73-2.73l-.15-.08a2 2 0 01-1-1.74v-.5a2 2 0 011-1.74l.15-.09a2 2 0 00.73-2.73l-.22-.38a2 2 0 00-2.73-.73l-.15.08a2 2 0 01-2 0l-.43-.25a2 2 0 01-1-1.73V4a2 2 0 00-2-2z"/>
+            <circle cx="12" cy="12" r="3"/>
+        </svg>
+    </button>
+
+    <!-- Admin Login Modal -->
+    <div class="admin-login" id="admin-login">
+        <div class="login-box">
+            <button class="login-close" id="login-close">&times;</button>
+            <h3>Painel Admin</h3>
+            <p>Digite as credenciais para acessar</p>
+            <form id="login-form">
+                <div class="login-field">
+                    <input type="text" id="login-user" placeholder="Usuário" autocomplete="off">
+                </div>
+                <div class="login-field">
+                    <input type="password" id="login-pass" placeholder="Senha" autocomplete="off">
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Entrar</button>
+                <p class="login-error" id="login-error">Usuário ou senha incorretos</p>
+            </form>
+        </div>
+    </div>
+
+    <script src="main.js" defer></script>
+</body>
+</html>
