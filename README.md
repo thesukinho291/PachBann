@@ -1,158 +1,104 @@
-# PachBann Web Design - Site Oficial
+# PachBann - Site Institucional
 
-Transformamos sua visão em presença digital.
+Este repositório contém o site institucional da PachBann Web Design.
 
-## 📋 Visão Geral
+O projeto é um frontend estático (`HTML + CSS + JS`) com backend serverless na Vercel para persistência de dados no Neon (PostgreSQL).
 
-Site institucional completo da PachBann Web Design, desenvolvido com HTML5, CSS3 e JavaScript vanilla. O site inclui:
+## Stack
 
-- ✅ Design moderno com dark theme e glassmorphism
-- ✅ Fully responsive (mobile, tablet, desktop)
-- ✅ Animações suaves de scroll
-- ✅ Formulário de contato integrado com Neon PostgreSQL
-- ✅ Partículas animadas no hero
-- ✅ Contadores animados
-- ✅ Filtros de portfólio interativos
-- ✅ SEO otimizado
+- Frontend: HTML, CSS, JavaScript (vanilla)
+- Build: Vite
+- Backend: Vercel Functions (`/api`)
+- Banco: Neon PostgreSQL
 
-## 🚀 Como Usar
+## O que o projeto já faz
 
-### 1. Abrir o Site
+- Página institucional completa e responsiva
+- Formulário de contato com envio para banco
+- Painel admin para edição de conteúdo
+- Persistência do conteúdo do site no Neon
+- Persistência dos leads no Neon
 
-Basta abrir o arquivo `index.html` no navegador:
+## Estrutura principal
 
-```bash
-# No Windows
-start index.html
-
-# No Mac
-open index.html
-
-# No Linux
-xdg-open index.html
+```text
+.
+├── index.html
+├── style.css
+├── main.js
+├── api
+│   ├── leads.js
+│   └── site-content.js
+├── db
+│   └── schema.sql
+├── logo1.png
+├── logo2.png
+└── README.md
 ```
 
-Ou arraste o arquivo `index.html` para o navegador.
+## Banco de dados (Neon)
 
-### 2. Configurar o Neon PostgreSQL
+As tabelas usadas pelo projeto estão em `db/schema.sql`:
 
-O formulário de contato agora envia os leads para a rota `/api/leads`, que salva no Neon usando a variável de ambiente `DATABASE_URL`.
+- `leads`: contatos enviados pelo formulário
+- `site_content`: conteúdo editável do painel admin
 
-#### Passo 1: Criar a tabela
+No painel do Neon:
 
-No painel do Neon, abra o **SQL Editor**, cole o conteúdo de `db/schema.sql` e execute.
+1. Abra o SQL Editor.
+2. Execute o conteúdo de `db/schema.sql`.
 
-#### Passo 2: Configurar a variável de ambiente
+## Variáveis de ambiente
 
-Crie um arquivo `.env.local` para desenvolvimento local:
+A aplicação usa:
 
-```bash
-DATABASE_URL="postgresql://USER:PASSWORD@HOST/neondb?sslmode=require"
+```env
+DATABASE_URL="postgresql://..."
 ```
 
-No deploy da Vercel, adicione a mesma variável em **Project Settings > Environment Variables**.
+Essa variável deve ser configurada:
 
-#### Passo 3: Rodar localmente
+- Local (arquivo `.env` ou `.env.local`)
+- Vercel (Environment Variables)
 
-Para testar apenas o site:
+## Rodando localmente
+
+### Apenas frontend
 
 ```bash
 npm install
 npm run dev
 ```
 
-Para testar site + API localmente, use a Vercel CLI:
+### Frontend + APIs (`/api`)
 
 ```bash
 npx vercel dev
 ```
 
-> Importante: nao coloque a connection string do Neon dentro do `main.js`, `index.html` ou qualquer arquivo publico.
+## Deploy na Vercel
 
-### 3. Conteúdo do site no Neon
+1. Conecte o repositório na Vercel.
+2. Configure `DATABASE_URL` em:
+   `Project Settings > Environment Variables`
+3. Faça deploy/redeploy.
 
-O conteúdo editado no painel admin é salvo pela rota `/api/site-content` na tabela `site_content`.
+## Endpoints usados
 
-Se essa API estiver indisponível durante desenvolvimento, o projeto usa fallback em `localStorage`.
+- `POST /api/leads`: salva lead do formulário
+- `GET /api/leads`: lista leads (painel admin)
+- `GET /api/site-content`: carrega conteúdo do site
+- `PUT /api/site-content`: salva conteúdo editado no painel
 
-## 📁 Estrutura de Arquivos
+## Comportamento de fallback
 
-```
-pachbann-site/
-├── index.html          # Página principal
-├── style.css           # Estilos globais
-├── main.js             # JavaScript principal
-├── api/
-│   ├── leads.js        # API de leitura/escrita de leads no Neon
-│   └── site-content.js # API de leitura/escrita do conteúdo no Neon
-├── db/
-│   └── schema.sql      # Tabelas leads e site_content
-├── README.md           # Este arquivo
-├── logo1.png           # Logo completa
-└── logo2.png           # Ícone PB
-```
+Se a API não estiver disponível em ambiente local, o frontend mantém fallback em `localStorage` para evitar perda de edição/teste.
 
-## 🎨 Personalização
+## Observações
 
-### Cores
-
-Todas as cores estão definidas como variáveis CSS no `style.css`:
-
-```css
-:root {
-    --color-bg-primary: #1a202c;
-    --color-bg-secondary: #2d3748;
-    --color-accent: #ffffff;
-    /* ... outras cores */
-}
-```
-
-### Tipografia
-
-As fontes estão importadas do Google Fonts:
-- **Playfair Display**: Títulos (elegante, sofisticado)
-- **DM Sans**: Corpo (moderno, legível)
-
-### Conteúdo
-
-Para alterar textos, basta editar o `index.html`. Todos os textos estão em português brasileiro.
-
-## 🔧 Funcionalidades
-
-### Animações
-
-- Fade-in + slide-up ao entrar na viewport
-- Contadores numéricos animados
-- Partículas flutuantes no hero
-- Hover effects em cards e botões
-- Smooth scroll para links internos
-
-### Formulário
-
-- Validação em tempo real
-- Máscara de telefone automática
-- Feedback visual de sucesso/erro
-- Fallback para WhatsApp em caso de erro
-
-### Responsividade
-
-- Mobile: 1 coluna, menu hamburguer
-- Tablet: 2 colunas
-- Desktop: 3 colunas
-
-## 📱 Contato
-
-- **Telefone**: (15) 99798-4583
-- **E-mail**: contato@pachbann.com
-- **WhatsApp**: [Enviar mensagem](https://wa.me/5515997984583)
-
-## 📝 Notas
-
-- O site funciona localmente sem API para visualização, mas o salvamento em banco exige internet
-- Imagens do portfólio são placeholders (gradientes coloridos)
-- Links de redes sociais são fictícios (configure os reais)
-- Se a API estiver fora do ar, os dados do formulário ficam em `localStorage` temporariamente
+- Não versionar `.env` nem strings de conexão em arquivos públicos.
+- O envio real para banco depende da `DATABASE_URL` válida.
 
 ---
 
-© 2026 PachBann Web Design. Todos os direitos reservados.
+PachBann Web Design
