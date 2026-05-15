@@ -68,8 +68,9 @@ const defaultData = {
         titulo: 'Equipe'
     },
     equipeItems: [
-        { id: 'e1', nome: 'Mário Augusto Pachelli de Gois', funcao: 'Co-fundador & Desenvolvedor Web', bio: 'Apaixonado por tecnologia e design, Mário lidera o desenvolvimento técnico da PachBann com foco em performance e inovação.', avatar: 'MA' },
-        { id: 'e2', nome: 'Kevin Matheus Pinto Meira', funcao: 'Co-fundador & Designer', bio: 'Kevin traz criatividade e visão estética para cada projeto, garantindo que cada site seja único e impactante.', avatar: 'KM' }
+        { id: 'e1', nome: 'Mário Augusto Pachelli de Gois', funcao: 'Fundador & Desenvolvedor Web', bio: 'Apaixonado por tecnologia e design, Mário lidera o desenvolvimento técnico da PachBann com foco em performance, estratégia digital e inovação.', avatar: 'MA' },
+        { id: 'e2', nome: 'Kevin Matheus Pinto Meira', funcao: 'Co-fundador & Designer', bio: 'Kevin traz criatividade e visão estética para cada projeto, garantindo que cada site seja único e impactante.', avatar: 'KM' },
+        { id: 'e3', nome: 'Gabriel Capelini de Oliveira', funcao: 'Co-fundador & Desenvolvedor', bio: 'Gabriel contribui no desenvolvimento e na evolução dos projetos, apoiando a criação de experiências digitais bem estruturadas, responsivas e alinhadas aos objetivos de cada cliente.', avatar: 'GC' }
     ],
     contato: {
         label: 'Entre em contato',
