@@ -105,12 +105,18 @@ const requiredPortfolioProjects = [
 
 function withRequiredPortfolioItems(items) {
     const list = Array.isArray(items) ? items : [];
-    return requiredPortfolioProjects.map((project) => {
+    const required = requiredPortfolioProjects.map((project) => {
         const existing = list.find(
             (item) => item?.id === project.id || item?.link === project.link || item?.titulo === project.titulo
         );
         return existing ? { ...project, ...existing } : { ...project };
     });
+    const extras = list.filter((item) => {
+        return !requiredPortfolioProjects.some(
+            (project) => item?.id === project.id || item?.link === project.link || item?.titulo === project.titulo
+        );
+    });
+    return [...required, ...extras];
 }
 
 // ───────────────────────────────────────
@@ -492,6 +498,33 @@ async function initAdminAuth() {
 // ADMIN PANEL
 // ───────────────────────────────────────
 let currentSection = 'hero';
+let autosaveTimer = null;
+
+function escapeHtml(value = '') {
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function makeId(prefix) {
+    return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+}
+
+function getSitePreviewUrl(link) {
+    const cleanLink = String(link || '').trim();
+    if (!cleanLink) return '';
+    return `https://image.thum.io/get/width/1200/noanimate/${cleanLink}`;
+}
+
+function scheduleSiteSave() {
+    clearTimeout(autosaveTimer);
+    autosaveTimer = setTimeout(() => {
+        saveSiteData();
+    }, 650);
+}
 
 function initAdminPanel() {
     const adminPanel = document.getElementById('admin-panel');
@@ -509,6 +542,9 @@ function initAdminPanel() {
             const tabName = tab.dataset.tab;
             tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === tabName));
             panes.forEach(p => p.classList.toggle('active', p.id === `pane-${tabName}`));
+            if (tabName === 'dashboard') renderDashboard();
+            if (tabName === 'portfolio') renderPortfolioManager();
+            if (tabName === 'equipe') renderTeamManager();
             if (tabName === 'leads') loadLeads();
         });
     });
@@ -522,6 +558,230 @@ function initAdminPanel() {
     });
 
     renderSectionEditor();
+    renderDashboard();
+    renderPortfolioManager();
+    renderTeamManager();
+
+    document.getElementById('add-portfolio-item')?.addEventListener('click', addPortfolioItem);
+    document.getElementById('add-team-item')?.addEventListener('click', addTeamItem);
+}
+
+function renderDashboard() {
+    const overview = document.getElementById('dashboard-overview');
+    if (!overview) return;
+
+    const portfolioCount = withRequiredPortfolioItems(siteData.portfolioItems || []).length;
+    const teamCount = (siteData.equipeItems || []).length;
+    const servicesCount = (siteData.servicosItems || []).length;
+
+    overview.innerHTML = `
+        <div class="dashboard-hero">
+            <span>Painel no-code</span>
+            <h4>Gerencie o site sem mexer no código.</h4>
+            <p>As alterações são salvas no Neon e aparecem no site publicado após atualizar a página.</p>
+        </div>
+        <div class="dashboard-stats">
+            <div class="dashboard-stat">
+                <strong>${portfolioCount}</strong>
+                <span>Projetos</span>
+            </div>
+            <div class="dashboard-stat">
+                <strong>${teamCount}</strong>
+                <span>Colaboradores</span>
+            </div>
+            <div class="dashboard-stat">
+                <strong>${servicesCount}</strong>
+                <span>Serviços</span>
+            </div>
+        </div>
+        <div class="dashboard-shortcuts">
+            <button class="dashboard-shortcut" data-open-tab="portfolio">Editar portfólio</button>
+            <button class="dashboard-shortcut" data-open-tab="equipe">Editar colaboradores</button>
+            <button class="dashboard-shortcut" data-open-tab="content">Editar textos do site</button>
+            <button class="dashboard-shortcut" data-open-tab="leads">Ver leads recebidos</button>
+        </div>
+    `;
+
+    overview.querySelectorAll('[data-open-tab]').forEach(button => {
+        button.addEventListener('click', () => openAdminTab(button.dataset.openTab));
+    });
+}
+
+function openAdminTab(tabName) {
+    document.querySelectorAll('.admin-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.tab === tabName);
+    });
+    document.querySelectorAll('.admin-pane').forEach(pane => {
+        pane.classList.toggle('active', pane.id === `pane-${tabName}`);
+    });
+    if (tabName === 'portfolio') renderPortfolioManager();
+    if (tabName === 'equipe') renderTeamManager();
+    if (tabName === 'dashboard') renderDashboard();
+    if (tabName === 'leads') loadLeads();
+}
+
+function renderPortfolioManager() {
+    const manager = document.getElementById('portfolio-manager');
+    if (!manager) return;
+
+    siteData.portfolioItems = withRequiredPortfolioItems(siteData.portfolioItems || []);
+    manager.innerHTML = siteData.portfolioItems.map((item, index) => `
+        <div class="admin-item admin-collection-card" data-index="${index}">
+            <div class="admin-card-preview" style="--cover-image: ${item.imagem ? `url('${escapeHtml(item.imagem)}')` : 'none'};">
+                <span>${escapeHtml(item.titulo || 'Novo projeto')}</span>
+            </div>
+            <div class="admin-field">
+                <label>Título</label>
+                <input type="text" data-section="portfolioItems" data-field="titulo" data-index="${index}" value="${escapeHtml(item.titulo || '')}">
+            </div>
+            <div class="admin-field">
+                <label>Categoria</label>
+                <input type="text" data-section="portfolioItems" data-field="categoria" data-index="${index}" value="${escapeHtml(item.categoria || '')}">
+            </div>
+            <div class="admin-field">
+                <label>Link do site</label>
+                <input type="url" data-section="portfolioItems" data-field="link" data-index="${index}" value="${escapeHtml(item.link || '')}">
+            </div>
+            <div class="admin-field">
+                <label>Imagem</label>
+                <input type="url" data-section="portfolioItems" data-field="imagem" data-index="${index}" value="${escapeHtml(item.imagem || '')}">
+            </div>
+            <div class="admin-field">
+                <label>Cor</label>
+                <input type="color" data-section="portfolioItems" data-field="cor" data-index="${index}" value="${escapeHtml(item.cor || '#ffffff')}">
+            </div>
+            <div class="admin-card-actions">
+                <button class="admin-small-btn" data-use-preview="${index}">Usar print do link</button>
+                <button class="admin-danger-btn" data-remove-portfolio="${index}">Remover</button>
+            </div>
+        </div>
+    `).join('');
+
+    bindAdminInputs(manager);
+    manager.querySelectorAll('[data-use-preview]').forEach(button => {
+        button.addEventListener('click', () => {
+            const index = Number(button.dataset.usePreview);
+            const item = siteData.portfolioItems[index];
+            item.imagem = getSitePreviewUrl(item.link);
+            renderAllContent();
+            renderPortfolioManager();
+            scheduleSiteSave();
+        });
+    });
+    manager.querySelectorAll('[data-remove-portfolio]').forEach(button => {
+        button.addEventListener('click', () => removePortfolioItem(Number(button.dataset.removePortfolio)));
+    });
+}
+
+function renderTeamManager() {
+    const manager = document.getElementById('team-manager');
+    if (!manager) return;
+
+    siteData.equipeItems = siteData.equipeItems || [];
+    manager.innerHTML = siteData.equipeItems.map((item, index) => `
+        <div class="admin-item admin-collection-card" data-index="${index}">
+            <div class="admin-person-preview">
+                <span>${escapeHtml(item.avatar || 'PB')}</span>
+                <div>
+                    <strong>${escapeHtml(item.nome || 'Novo colaborador')}</strong>
+                    <small>${escapeHtml(item.funcao || 'Função')}</small>
+                </div>
+            </div>
+            <div class="admin-field">
+                <label>Nome</label>
+                <input type="text" data-section="equipeItems" data-field="nome" data-index="${index}" value="${escapeHtml(item.nome || '')}">
+            </div>
+            <div class="admin-field">
+                <label>Função</label>
+                <input type="text" data-section="equipeItems" data-field="funcao" data-index="${index}" value="${escapeHtml(item.funcao || '')}">
+            </div>
+            <div class="admin-field">
+                <label>Avatar</label>
+                <input type="text" maxlength="3" data-section="equipeItems" data-field="avatar" data-index="${index}" value="${escapeHtml(item.avatar || '')}">
+            </div>
+            <div class="admin-field">
+                <label>Bio</label>
+                <textarea data-section="equipeItems" data-field="bio" data-index="${index}">${escapeHtml(item.bio || '')}</textarea>
+            </div>
+            <div class="admin-card-actions">
+                <button class="admin-danger-btn" data-remove-team="${index}">Remover</button>
+            </div>
+        </div>
+    `).join('');
+
+    bindAdminInputs(manager);
+    manager.querySelectorAll('[data-remove-team]').forEach(button => {
+        button.addEventListener('click', () => removeTeamItem(Number(button.dataset.removeTeam)));
+    });
+}
+
+function bindAdminInputs(root) {
+    root.querySelectorAll('input, textarea').forEach(input => {
+        input.addEventListener('input', (e) => {
+            const section = e.target.dataset.section;
+            const field = e.target.dataset.field;
+            const index = e.target.dataset.index;
+            updateSiteField(section, field, e.target.value, index);
+
+            if (section === 'portfolioItems' && field === 'link') {
+                const item = siteData.portfolioItems[Number(index)];
+                if (item && !item.imagem) {
+                    item.imagem = getSitePreviewUrl(e.target.value);
+                }
+            }
+
+            scheduleSiteSave();
+        });
+    });
+}
+
+function addPortfolioItem() {
+    siteData.portfolioItems = withRequiredPortfolioItems(siteData.portfolioItems || []);
+    siteData.portfolioItems.push({
+        id: makeId('portfolio'),
+        categoria: 'Site',
+        titulo: 'Novo projeto',
+        cor: '#ffffff',
+        link: '',
+        imagem: ''
+    });
+    renderAllContent();
+    renderPortfolioManager();
+    renderDashboard();
+    scheduleSiteSave();
+}
+
+function removePortfolioItem(index) {
+    siteData.portfolioItems = withRequiredPortfolioItems(siteData.portfolioItems || []);
+    siteData.portfolioItems.splice(index, 1);
+    renderAllContent();
+    renderPortfolioManager();
+    renderDashboard();
+    scheduleSiteSave();
+}
+
+function addTeamItem() {
+    siteData.equipeItems = siteData.equipeItems || [];
+    siteData.equipeItems.push({
+        id: makeId('team'),
+        nome: 'Novo colaborador',
+        funcao: 'Função',
+        bio: 'Descrição breve do colaborador.',
+        avatar: 'PB'
+    });
+    renderAllContent();
+    renderTeamManager();
+    renderDashboard();
+    scheduleSiteSave();
+}
+
+function removeTeamItem(index) {
+    siteData.equipeItems = siteData.equipeItems || [];
+    siteData.equipeItems.splice(index, 1);
+    renderAllContent();
+    renderTeamManager();
+    renderDashboard();
+    scheduleSiteSave();
 }
 
 function renderSectionEditor() {
@@ -704,6 +964,7 @@ function renderSectionEditor() {
             const field = e.target.dataset.field;
             const index = e.target.dataset.index;
             updateSiteField(section, field, e.target.value, index);
+            scheduleSiteSave();
         });
     });
 }

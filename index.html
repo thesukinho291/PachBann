@@ -237,17 +237,49 @@
     <!-- ADMIN PANEL -->
     <div class="admin-panel" id="admin-panel">
         <div class="admin-header">
-            <h3>Painel</h3>
+            <div>
+                <span class="admin-eyebrow">PachBann</span>
+                <h3>Dashboard</h3>
+            </div>
             <button class="admin-close" id="admin-close">&times;</button>
         </div>
         <div class="admin-tabs">
-            <button class="admin-tab active" data-tab="content">Conteúdo</button>
+            <button class="admin-tab active" data-tab="dashboard">Dashboard</button>
+            <button class="admin-tab" data-tab="portfolio">Portfólio</button>
+            <button class="admin-tab" data-tab="equipe">Colaboradores</button>
+            <button class="admin-tab" data-tab="content">Conteúdo</button>
             <button class="admin-tab" data-tab="leads">Leads</button>
             <button class="admin-tab" data-tab="settings">Config</button>
         </div>
         <div class="admin-content" id="admin-content">
+            <!-- Aba de dashboard -->
+            <div class="admin-pane active" id="pane-dashboard">
+                <div id="dashboard-overview"></div>
+            </div>
+            <!-- Aba de portfólio -->
+            <div class="admin-pane" id="pane-portfolio">
+                <div class="admin-collection-head">
+                    <div>
+                        <h4>Portfólio</h4>
+                        <p>Adicione sites e use o link como imagem automaticamente.</p>
+                    </div>
+                    <button class="admin-action-btn" id="add-portfolio-item">Adicionar</button>
+                </div>
+                <div class="admin-collection" id="portfolio-manager"></div>
+            </div>
+            <!-- Aba de colaboradores -->
+            <div class="admin-pane" id="pane-equipe">
+                <div class="admin-collection-head">
+                    <div>
+                        <h4>Colaboradores</h4>
+                        <p>Gerencie nomes, funções e descrições da equipe.</p>
+                    </div>
+                    <button class="admin-action-btn" id="add-team-item">Adicionar</button>
+                </div>
+                <div class="admin-collection" id="team-manager"></div>
+            </div>
             <!-- Aba de conteúdo -->
-            <div class="admin-pane active" id="pane-content">
+            <div class="admin-pane" id="pane-content">
                 <div class="admin-section">
                     <h4>Selecione uma seção para editar:</h4>
                     <div class="admin-section-list" id="section-list">
