@@ -51,7 +51,23 @@ const defaultData = {
         { id: 'p1', categoria: 'Institucional', titulo: 'Tech Solutions', cor: '#6366f1' },
         { id: 'p2', categoria: 'E-commerce', titulo: 'Bella Fashion', cor: '#ec4899' },
         { id: 'p3', categoria: 'Landing Page', titulo: 'App Launch', cor: '#14b8a6' },
-        { id: 'p4', categoria: 'Institucional', titulo: 'Green Energy', cor: '#f59e0b' }
+        { id: 'p4', categoria: 'Institucional', titulo: 'Green Energy', cor: '#f59e0b' },
+        {
+            id: 'p5',
+            categoria: 'Institucional',
+            titulo: 'Fort Alimentos',
+            cor: '#22c55e',
+            link: 'https://fort-alimentos.vercel.app/',
+            imagem: 'https://image.thum.io/get/width/1200/noanimate/https://fort-alimentos.vercel.app/'
+        },
+        {
+            id: 'p6',
+            categoria: 'Landing Page',
+            titulo: 'Toninho Corredor',
+            cor: '#ef4444',
+            link: 'https://toninhocorredor.vercel.app/',
+            imagem: 'https://image.thum.io/get/width/1200/noanimate/https://toninhocorredor.vercel.app/'
+        }
     ],
     equipe: {
         label: 'Nossa equipe',
@@ -73,6 +89,38 @@ const defaultData = {
         tagline: 'Transformamos sua visão em presença digital.'
     }
 };
+
+const requiredPortfolioProjects = [
+    {
+        id: 'p5',
+        categoria: 'Institucional',
+        titulo: 'Fort Alimentos',
+        cor: '#22c55e',
+        link: 'https://fort-alimentos.vercel.app/',
+        imagem: 'https://image.thum.io/get/width/1200/noanimate/https://fort-alimentos.vercel.app/'
+    },
+    {
+        id: 'p6',
+        categoria: 'Landing Page',
+        titulo: 'Toninho Corredor',
+        cor: '#ef4444',
+        link: 'https://toninhocorredor.vercel.app/',
+        imagem: 'https://image.thum.io/get/width/1200/noanimate/https://toninhocorredor.vercel.app/'
+    }
+];
+
+function withRequiredPortfolioItems(items) {
+    const list = Array.isArray(items) ? [...items] : [];
+    requiredPortfolioProjects.forEach((project) => {
+        const exists = list.some(
+            (item) => item?.id === project.id || item?.link === project.link || item?.titulo === project.titulo
+        );
+        if (!exists) {
+            list.push(project);
+        }
+    });
+    return list;
+}
 
 // ───────────────────────────────────────
 // CARREGAMENTO DE DADOS
@@ -206,7 +254,8 @@ function renderServicos() {
 
 function renderPortfolio() {
     const portfolio = siteData.portfolio || defaultData.portfolio;
-    const items = siteData.portfolioItems || defaultData.portfolioItems;
+    const baseItems = siteData.portfolioItems || defaultData.portfolioItems;
+    const items = withRequiredPortfolioItems(baseItems);
 
     setEditable('portfolio', 'label', portfolio.label);
     setEditable('portfolio', 'titulo', portfolio.titulo);
@@ -215,12 +264,18 @@ function renderPortfolio() {
     if (!grid) return;
 
     grid.innerHTML = items.map(p => `
-        <div class="portfolio-item" data-id="${p.id}" style="--accent: ${p.cor}">
+        <a
+            class="portfolio-item"
+            data-id="${p.id}"
+            href="${p.link || '#'}"
+            ${p.link ? 'target="_blank" rel="noopener noreferrer"' : ''}
+            style="--accent: ${p.cor}; --cover-image: ${p.imagem ? `url('${p.imagem}')` : 'none'};"
+        >
             <div class="portfolio-info">
                 <span class="portfolio-cat">${p.categoria}</span>
                 <h4>${p.titulo}</h4>
             </div>
-        </div>
+        </a>
     `).join('');
 }
 
@@ -584,7 +639,7 @@ function renderSectionEditor() {
                 <input type="text" data-section="portfolio" data-field="titulo" value="${siteData.portfolio?.titulo || ''}">
             </div>
             <h4>Portfolio - Items</h4>
-            ${(siteData.portfolioItems || []).map((p, i) => `
+            ${withRequiredPortfolioItems(siteData.portfolioItems || []).map((p, i) => `
                 <div class="admin-item">
                     <div class="admin-field">
                         <label>Título ${i + 1}:</label>
@@ -597,6 +652,14 @@ function renderSectionEditor() {
                     <div class="admin-field">
                         <label>Cor ${i + 1} (hex):</label>
                         <input type="text" data-section="portfolioItems" data-field="cor" data-index="${i}" value="${p.cor}">
+                    </div>
+                    <div class="admin-field">
+                        <label>Link ${i + 1}:</label>
+                        <input type="text" data-section="portfolioItems" data-field="link" data-index="${i}" value="${p.link || ''}">
+                    </div>
+                    <div class="admin-field">
+                        <label>Imagem ${i + 1} (URL):</label>
+                        <input type="text" data-section="portfolioItems" data-field="imagem" data-index="${i}" value="${p.imagem || ''}">
                     </div>
                 </div>
             `).join('')}
@@ -726,7 +789,12 @@ function updateSiteField(section, field, value, index) {
         siteData.servicosItems[parseInt(index)][field] = value;
     } else if (section === 'portfolioItems') {
         siteData.portfolioItems = siteData.portfolioItems || [];
-        siteData.portfolioItems[parseInt(index)][field] = value;
+        const itemIndex = parseInt(index, 10);
+        if (!siteData.portfolioItems[itemIndex]) {
+            const fallback = withRequiredPortfolioItems(siteData.portfolioItems)[itemIndex] || {};
+            siteData.portfolioItems[itemIndex] = { ...fallback };
+        }
+        siteData.portfolioItems[itemIndex][field] = value;
     } else if (section === 'equipeItems') {
         siteData.equipeItems = siteData.equipeItems || [];
         siteData.equipeItems[parseInt(index)][field] = value;

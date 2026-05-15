@@ -464,12 +464,18 @@ img {
 
 .portfolio-item {
     position: relative;
+    display: block;
     aspect-ratio: 16/10;
     background: var(--bg-tertiary);
     border-radius: var(--radius);
     overflow: hidden;
     cursor: pointer;
-    background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 30%, var(--bg-primary)));
+    background-image:
+        var(--cover-image),
+        linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 30%, var(--bg-primary)));
+    background-size: cover, auto;
+    background-position: center, center;
+    background-repeat: no-repeat, no-repeat;
     opacity: 0.8;
     transition: var(--transition);
 }
