@@ -478,6 +478,9 @@ async function initAdminAuth() {
     const loginError = document.getElementById('login-error');
     const logoutBtn = document.getElementById('admin-logout');
     const adminToggle = document.getElementById('admin-toggle');
+    const adminEntry = document.getElementById('admin-entry');
+    const adminLogin = document.getElementById('admin-login');
+    const loginClose = document.getElementById('login-close');
 
     try {
         const meResponse = await fetch('/api/admin-me', { credentials: 'include' });
@@ -512,6 +515,7 @@ async function initAdminAuth() {
             setAdminAuthState(true, payload?.user?.email || email);
             document.getElementById('login-user').value = '';
             document.getElementById('login-pass').value = '';
+            adminLogin?.classList.remove('active');
         } catch {
             loginError.classList.add('show');
         }
@@ -527,6 +531,20 @@ async function initAdminAuth() {
         setAdminAuthState(false, null);
         const adminPanel = document.getElementById('admin-panel');
         adminPanel?.classList.remove('active');
+    });
+
+    adminEntry?.addEventListener('click', () => {
+        adminLogin?.classList.add('active');
+    });
+
+    loginClose?.addEventListener('click', () => {
+        adminLogin?.classList.remove('active');
+    });
+
+    adminLogin?.addEventListener('click', (e) => {
+        if (e.target === adminLogin) {
+            adminLogin.classList.remove('active');
+        }
     });
 
     adminToggle?.addEventListener('click', () => {

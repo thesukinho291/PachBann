@@ -983,13 +983,34 @@ textarea.form-input {
     margin-top: 12px;
 }
 
-.admin-auth-wrap {
-    max-width: 420px;
-    margin: 0 auto;
+.admin-entry {
+    position: fixed;
+    top: 96px;
+    left: 24px;
+    width: 46px;
+    height: 46px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: rgba(20, 20, 20, 0.85);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1100;
+    transition: var(--transition);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
-.admin-auth-form {
-    margin-bottom: 16px;
+.admin-entry:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.admin-entry svg {
+    width: 22px;
+    height: 22px;
 }
 
 /* Leads */
@@ -1057,6 +1078,58 @@ textarea.form-input {
 
 .login-field input:focus {
     border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* ADMIN LOGIN MODAL */
+.admin-login {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.78);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1400;
+    padding: 24px;
+}
+
+.admin-login.active {
+    display: flex;
+}
+
+.login-box {
+    width: 100%;
+    max-width: 420px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    position: relative;
+}
+
+.login-box h3 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.login-box p {
+    color: var(--text-secondary);
+    margin-bottom: 18px;
+    font-size: 14px;
+}
+
+.login-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 999px;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
 }
 
 .login-error {
@@ -1170,5 +1243,10 @@ textarea.form-input {
     .admin-panel {
         width: 100%;
         right: -100%;
+    }
+
+    .admin-entry {
+        top: 88px;
+        left: 16px;
     }
 }
