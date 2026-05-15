@@ -533,14 +533,14 @@ img {
 /* TEAM */
 .team-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 32px;
-    max-width: 800px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    max-width: 1120px;
     margin: 0 auto;
 }
 
 .team-card {
-    padding: 48px 40px;
+    padding: 42px 28px;
     background: var(--bg-card);
     border-radius: var(--radius);
     border: 1px solid var(--border);
@@ -1333,6 +1333,11 @@ textarea.form-input {
 
     .services-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .team-grid {
+        grid-template-columns: repeat(2, 1fr);
+        max-width: 800px;
     }
 }
 
