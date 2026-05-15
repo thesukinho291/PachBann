@@ -5,8 +5,6 @@
 
 let siteData = {};
 let isAdminLogged = false;
-let footerClicks = 0;
-let footerClickTimer = null;
 
 // ───────────────────────────────────────
 // DADOS PADRÃO
@@ -161,10 +159,16 @@ async function saveSiteData() {
     try {
         const response = await fetch('/api/site-content', {
             method: 'PUT',
+            credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(siteData)
         });
         if (!response.ok) {
+            if (response.status === 401) {
+                alert('Sessao admin expirada. Faca login novamente para salvar alteracoes.');
+                setAdminAuthState(false, null);
+                return false;
+            }
             throw new Error('Falha ao salvar na API');
         }
         localStorage.setItem('pachbann_site_data', JSON.stringify(siteData));
@@ -447,70 +451,86 @@ function initPhoneMask() {
 }
 
 // ───────────────────────────────────────
-// ADMIN SECRETO
+// ADMIN AUTH
 // ───────────────────────────────────────
-function initAdminSecret() {
-    const footer = document.querySelector('.footer-bottom');
-    const adminLogin = document.getElementById('admin-login');
-    const loginForm = document.getElementById('login-form');
-    const loginClose = document.getElementById('login-close');
+function setAdminAuthState(authenticated, userEmail) {
+    isAdminLogged = authenticated;
+    const adminToggle = document.getElementById('admin-toggle');
+    const adminAuthStatus = document.getElementById('admin-auth-status');
     const loginError = document.getElementById('login-error');
+    const loginForm = document.getElementById('login-form');
+    const logoutBtn = document.getElementById('admin-logout');
+
+    if (adminToggle) adminToggle.style.display = authenticated ? 'flex' : 'none';
+    if (logoutBtn) logoutBtn.style.display = authenticated ? 'inline-flex' : 'none';
+    if (loginForm) loginForm.style.display = authenticated ? 'none' : 'block';
+    if (loginError) loginError.classList.remove('show');
+
+    if (adminAuthStatus) {
+        adminAuthStatus.textContent = authenticated
+            ? `Conectado como ${userEmail || 'admin'}`
+            : 'Faça login para acessar o painel admin.';
+    }
+}
+
+async function initAdminAuth() {
+    const loginForm = document.getElementById('login-form');
+    const loginError = document.getElementById('login-error');
+    const logoutBtn = document.getElementById('admin-logout');
     const adminToggle = document.getElementById('admin-toggle');
 
-    // Clique 5x no footer
-    footer?.addEventListener('click', (e) => {
-        e.preventDefault();
-        footerClicks++;
-
-        if (footerClickTimer) clearTimeout(footerClickTimer);
-
-        footerClickTimer = setTimeout(() => {
-            footerClicks = 0;
-        }, 2000);
-
-        if (footerClicks >= 5) {
-            footerClicks = 0;
-            if (footerClickTimer) clearTimeout(footerClickTimer);
-            adminLogin.classList.add('active');
+    try {
+        const meResponse = await fetch('/api/admin-me', { credentials: 'include' });
+        if (meResponse.ok) {
+            const me = await meResponse.json();
+            setAdminAuthState(true, me?.user?.email || null);
+        } else {
+            setAdminAuthState(false, null);
         }
-    });
+    } catch {
+        setAdminAuthState(false, null);
+    }
 
-    // Tecla secreta Ctrl+Alt+A
-    document.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'a') {
-            e.preventDefault();
-            adminLogin.classList.add('active');
-        }
-    });
-
-    // Fechar login
-    loginClose?.addEventListener('click', () => {
-        adminLogin.classList.remove('active');
-        document.getElementById('login-user').value = '';
-        document.getElementById('login-pass').value = '';
-        loginError.classList.remove('show');
-    });
-
-    // Login
-    loginForm?.addEventListener('submit', (e) => {
+    loginForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const user = document.getElementById('login-user').value;
-        const pass = document.getElementById('login-pass').value;
+        const email = document.getElementById('login-user').value.trim().toLowerCase();
+        const password = document.getElementById('login-pass').value;
 
-        if (user === 'pachbann' && pass === 'pach291') {
-            isAdminLogged = true;
-            adminLogin.classList.remove('active');
-            adminToggle.style.display = 'flex';
+        try {
+            const response = await fetch('/api/admin-login', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
+            if (!response.ok) {
+                throw new Error('Credenciais invalidas');
+            }
+
+            const payload = await response.json();
+            setAdminAuthState(true, payload?.user?.email || email);
             document.getElementById('login-user').value = '';
             document.getElementById('login-pass').value = '';
-            loginError.classList.remove('show');
-        } else {
+        } catch {
             loginError.classList.add('show');
         }
     });
 
-    // Toggle admin panel
+    logoutBtn?.addEventListener('click', async () => {
+        try {
+            await fetch('/api/admin-logout', {
+                method: 'POST',
+                credentials: 'include'
+            });
+        } catch {}
+        setAdminAuthState(false, null);
+        const adminPanel = document.getElementById('admin-panel');
+        adminPanel?.classList.remove('active');
+    });
+
     adminToggle?.addEventListener('click', () => {
+        if (!isAdminLogged) return;
         const adminPanel = document.getElementById('admin-panel');
         adminPanel.classList.toggle('active');
     });
@@ -803,8 +823,13 @@ async function loadLeads() {
     if (!list) return;
 
     try {
-        const response = await fetch('/api/leads');
+        const response = await fetch('/api/leads', { credentials: 'include' });
         if (!response.ok) {
+            if (response.status === 401) {
+                list.innerHTML = '<p class="no-leads">Faça login para visualizar os leads.</p>';
+                setAdminAuthState(false, null);
+                return;
+            }
             throw new Error('API indisponivel');
         }
 
@@ -860,7 +885,7 @@ async function loadLeads() {
 // ───────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
     loadSiteData();
-    initAdminSecret();
+    initAdminAuth();
     initAdminPanel();
     animateNumbers();
     initPhoneMask();

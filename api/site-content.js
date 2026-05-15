@@ -1,4 +1,5 @@
 import { neon } from '@neondatabase/serverless';
+import { getSessionFromRequest } from './_auth.js';
 
 export default async function handler(req, res) {
   if (!process.env.DATABASE_URL) {
@@ -19,6 +20,11 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'PUT') {
+      const session = getSessionFromRequest(req);
+      if (!session || session.role !== 'admin') {
+        return res.status(401).json({ error: 'Nao autorizado' });
+      }
+
       const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
       if (!body || typeof body !== 'object') {
         return res.status(400).json({ error: 'Payload invalido' });

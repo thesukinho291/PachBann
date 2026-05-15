@@ -1,4 +1,5 @@
 import { neon } from '@neondatabase/serverless';
+import { getSessionFromRequest } from './_auth.js';
 
 const cleanText = (value, maxLength) => String(value || '').trim().slice(0, maxLength);
 
@@ -11,6 +12,11 @@ export default async function handler(req, res) {
 
   try {
     if (req.method === 'GET') {
+      const session = getSessionFromRequest(req);
+      if (!session || session.role !== 'admin') {
+        return res.status(401).json({ error: 'Nao autorizado' });
+      }
+
       const rows = await sql`
         select
           id,

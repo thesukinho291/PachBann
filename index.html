@@ -186,6 +186,30 @@
                 </div>
             </div>
         </section>
+
+        <!-- ACESSO ADMIN -->
+        <section class="section" id="admin-acesso">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-label">Área restrita</span>
+                    <h2 class="section-title">Acesso Admin</h2>
+                    <p class="section-desc" id="admin-auth-status">Faça login para acessar o painel admin.</p>
+                </div>
+                <div class="admin-auth-wrap">
+                    <form id="login-form" class="admin-auth-form">
+                        <div class="login-field">
+                            <input type="email" id="login-user" placeholder="E-mail" autocomplete="username" required>
+                        </div>
+                        <div class="login-field">
+                            <input type="password" id="login-pass" placeholder="Senha" autocomplete="current-password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full">Entrar</button>
+                        <p class="login-error" id="login-error">Credenciais inválidas.</p>
+                    </form>
+                    <button class="btn btn-ghost" id="admin-logout" style="display:none;">Sair da sessão</button>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- FOOTER -->
@@ -275,25 +299,6 @@
             <circle cx="12" cy="12" r="3"/>
         </svg>
     </button>
-
-    <!-- Admin Login Modal -->
-    <div class="admin-login" id="admin-login">
-        <div class="login-box">
-            <button class="login-close" id="login-close">&times;</button>
-            <h3>Painel Admin</h3>
-            <p>Digite as credenciais para acessar</p>
-            <form id="login-form">
-                <div class="login-field">
-                    <input type="text" id="login-user" placeholder="Usuário" autocomplete="off">
-                </div>
-                <div class="login-field">
-                    <input type="password" id="login-pass" placeholder="Senha" autocomplete="off">
-                </div>
-                <button type="submit" class="btn btn-primary btn-full">Entrar</button>
-                <p class="login-error" id="login-error">Usuário ou senha incorretos</p>
-            </form>
-        </div>
-    </div>
 
     <script type="module" src="main.js"></script>
 </body>

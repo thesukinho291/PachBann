@@ -17,3 +17,11 @@ create table if not exists site_content (
   data jsonb not null,
   atualizado_em timestamptz not null default now()
 );
+
+create table if not exists admin_users (
+  id bigserial primary key,
+  email text not null unique,
+  password_hash text not null,
+  ativo boolean not null default true,
+  criado_em timestamptz not null default now()
+);
