@@ -48,10 +48,6 @@ const defaultData = {
         titulo: 'Portfolio'
     },
     portfolioItems: [
-        { id: 'p1', categoria: 'Institucional', titulo: 'Tech Solutions', cor: '#6366f1' },
-        { id: 'p2', categoria: 'E-commerce', titulo: 'Bella Fashion', cor: '#ec4899' },
-        { id: 'p3', categoria: 'Landing Page', titulo: 'App Launch', cor: '#14b8a6' },
-        { id: 'p4', categoria: 'Institucional', titulo: 'Green Energy', cor: '#f59e0b' },
         {
             id: 'p5',
             categoria: 'Institucional',
@@ -110,16 +106,13 @@ const requiredPortfolioProjects = [
 ];
 
 function withRequiredPortfolioItems(items) {
-    const list = Array.isArray(items) ? [...items] : [];
-    requiredPortfolioProjects.forEach((project) => {
-        const exists = list.some(
+    const list = Array.isArray(items) ? items : [];
+    return requiredPortfolioProjects.map((project) => {
+        const existing = list.find(
             (item) => item?.id === project.id || item?.link === project.link || item?.titulo === project.titulo
         );
-        if (!exists) {
-            list.push(project);
-        }
+        return existing ? { ...project, ...existing } : { ...project };
     });
-    return list;
 }
 
 // ───────────────────────────────────────
@@ -130,6 +123,7 @@ function loadLocalData() {
     if (saved) {
         try {
             siteData = JSON.parse(saved);
+            siteData.portfolioItems = withRequiredPortfolioItems(siteData.portfolioItems);
         } catch (e) {
             siteData = JSON.parse(JSON.stringify(defaultData));
         }
@@ -149,6 +143,7 @@ async function loadSiteData() {
         const result = await response.json();
         if (result?.data) {
             siteData = result.data;
+            siteData.portfolioItems = withRequiredPortfolioItems(siteData.portfolioItems);
         } else {
             siteData = JSON.parse(JSON.stringify(defaultData));
             await saveSiteData();
