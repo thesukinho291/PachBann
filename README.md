@@ -34,75 +34,44 @@ xdg-open index.html
 
 Ou arraste o arquivo `index.html` para o navegador.
 
-### 2. Configurar o Firebase (Opcional)
+### 2. Configurar o Neon PostgreSQL
 
-O formulário de contato funciona em modo demonstração sem Firebase. Para ativar o salvamento real dos leads:
+O formulário de contato agora envia os leads para a rota `/api/leads`, que salva no Neon usando a variável de ambiente `DATABASE_URL`.
 
-#### Passo 1: Criar Projeto Firebase
+#### Passo 1: Criar a tabela
 
-1. Acesse [Firebase Console](https://console.firebase.google.com/)
-2. Clique em "Adicionar projeto"
-3. Dê um nome ao projeto (ex: "pachbann-site")
-4. Desabilite o Google Analytics (opcional) e clique em "Criar projeto"
+No painel do Neon, abra o **SQL Editor**, cole o conteúdo de `db/schema.sql` e execute.
 
-#### Passo 2: Registrar o App Web
+#### Passo 2: Configurar a variável de ambiente
 
-1. No painel do projeto, clique no ícone `</>` (Web)
-2. Dê um apelido ao app (ex: "Site PachBann")
-3. Clique em "Registrar app"
-4. **Copie** o objeto `firebaseConfig` fornecido
+Crie um arquivo `.env.local` para desenvolvimento local:
 
-#### Passo 3: Configurar o Código
-
-1. Abra o arquivo `main.js`
-2. Localize a seção `firebaseConfig`
-3. **Substitua** os valores placeholder pelos dados do seu projeto:
-
-```javascript
-const firebaseConfig = {
-    apiKey: "COLE_SUA_API_KEY_AQUI",
-    authDomain: "seu-projeto.firebaseapp.com",
-    projectId: "seu-projeto-id",
-    storageBucket: "seu-projeto.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "1:123456789:web:abc123def456"
-};
+```bash
+DATABASE_URL="postgresql://USER:PASSWORD@HOST/neondb?sslmode=require"
 ```
 
-#### Passo 4: Criar o Banco de Dados
+No deploy da Vercel, adicione a mesma variável em **Project Settings > Environment Variables**.
 
-1. No Firebase Console, vá em "Firestore Database"
-2. Clique em "Criar banco de dados"
-3. Escolha o modo de inicialização:
-   - **Modo de teste**: Para desenvolvimento (permite leitura/escrita sem autenticação)
-   - **Modo de produção**: Para produção com regras de segurança
-4. Selecione uma localização (recomendado: `southamerica-east1` para projetos brasileiros)
+#### Passo 3: Rodar localmente
 
-#### Passo 5: Regras de Segurança
+Para testar apenas o site:
 
-No Firestore, vá em "Regras" e substitua pelo seguinte:
-
-```
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /leads/{leadId} {
-      allow create: if true;
-      allow read, update, delete: if false;
-    }
-  }
-}
+```bash
+npm install
+npm run dev
 ```
 
-Isso permite que qualquer pessoa envie formulários, mas apenas você pode visualizar e editar os leads pelo console do Firebase.
+Para testar site + API localmente, use a Vercel CLI:
 
-#### Passo 6: Testar
+```bash
+npx vercel dev
+```
 
-1. Recarregue a página
-2. Abra o console do navegador (F12)
-3. Preencha e envie o formulário
-4. Verifique se a mensagem "✅ Firebase conectado com sucesso!" aparece
-5. No Firebase Console, verifique se o lead aparece na coleção "leads"
+> Importante: nao coloque a connection string do Neon dentro do `main.js`, `index.html` ou qualquer arquivo publico.
+
+### 3. Firebase legado
+
+O código ainda mantém um fallback antigo para Firebase/localStorage caso a API `/api/leads` não esteja disponível. Para produção, prefira o Neon com `DATABASE_URL` configurada.
 
 ## 📁 Estrutura de Arquivos
 
@@ -111,12 +80,13 @@ pachbann-site/
 ├── index.html          # Página principal
 ├── style.css           # Estilos globais
 ├── main.js             # JavaScript principal
-├── firebase.js         # Configuração do Firebase
+├── api/
+│   └── leads.js        # API que salva leads no Neon
+├── db/
+│   └── schema.sql      # Tabela de leads
 ├── README.md           # Este arquivo
-│
-└── assets/
-    ├── logo1.png        # Logo completa (fornecida)
-    └── logo2.png       # Ícone PB (fornecida)
+├── logo1.png           # Logo completa
+└── logo2.png           # Ícone PB
 ```
 
 ## 🎨 Personalização

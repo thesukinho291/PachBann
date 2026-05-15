@@ -405,22 +405,40 @@ function initContactForm() {
             criadoEm: new Date().toISOString()
         };
 
-        if (firebaseInitialized && db) {
-            try {
-                await db.collection('leads').add(formData);
-                form.classList.add('success');
-                form.reset();
-                setTimeout(() => form.classList.remove('success'), 5000);
-            } catch (error) {
-                console.error('Erro:', error);
+        try {
+            const response = await fetch('/api/leads', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            if (!response.ok) {
+                throw new Error('API indisponivel');
             }
-        } else {
-            const leads = JSON.parse(localStorage.getItem('pachbann_leads') || '[]');
-            leads.push(formData);
-            localStorage.setItem('pachbann_leads', JSON.stringify(leads));
+
             form.classList.add('success');
             form.reset();
             setTimeout(() => form.classList.remove('success'), 5000);
+        } catch (apiError) {
+            console.warn('API Neon indisponivel, usando fallback:', apiError);
+            if (firebaseInitialized && db) {
+                try {
+                    await db.collection('leads').add(formData);
+                    form.classList.add('success');
+                    form.reset();
+                    setTimeout(() => form.classList.remove('success'), 5000);
+                } catch (error) {
+                    console.error('Erro:', error);
+                    alert('Nao foi possivel enviar sua mensagem agora. Tente pelo WhatsApp.');
+                }
+            } else {
+                const leads = JSON.parse(localStorage.getItem('pachbann_leads') || '[]');
+                leads.push(formData);
+                localStorage.setItem('pachbann_leads', JSON.stringify(leads));
+                form.classList.add('success');
+                form.reset();
+                setTimeout(() => form.classList.remove('success'), 5000);
+            }
         }
 
         submitBtn.classList.remove('loading');
