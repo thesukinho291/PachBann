@@ -1,38 +1,28 @@
 # PachBann Web Design
 
-O site da PachBann foi criado para apresentar a marca, mostrar projetos reais e facilitar o contato de empresas que querem fortalecer sua presença digital.
+A PachBann Web Design desenvolve sites modernos para empresas, marcas e profissionais que querem se apresentar melhor no digital. A proposta da marca é unir visual profissional, navegação clara e uma experiência pensada para gerar confiança desde o primeiro contato.
 
-A proposta é simples: transformar ideias em experiências web profissionais, com foco em design, performance e resultado comercial.
+## Objetivo do Site
 
-## Sobre o site
+O site institucional da PachBann apresenta a empresa, seus serviços, projetos publicados e formas de contato. Ele funciona como vitrine comercial da marca, mostrando de forma direta como a PachBann pode ajudar negócios a terem uma presença online mais forte, organizada e atual.
 
-Este projeto funciona como vitrine oficial da PachBann e também como canal de entrada para novos clientes.
+## Principais Seções
 
-Nele, a marca apresenta:
+- Início, com apresentação da marca e chamada principal.
+- Sobre, com posicionamento e visão da empresa.
+- Serviços, com as soluções oferecidas pela PachBann.
+- Portfólio, com projetos reais publicados.
+- Equipe, com os profissionais envolvidos na marca.
+- Contato, para novos clientes iniciarem uma conversa.
 
-- Posicionamento e proposta de valor
-- Serviços oferecidos
-- Portfólio com projetos publicados
-- Equipe e identidade da empresa
-- Formulário de contato para geração de oportunidades
+## Tecnologias Usadas
 
-## Objetivo principal
+O projeto foi desenvolvido com HTML, CSS e JavaScript, com publicação pela Vercel. A estrutura prioriza performance, responsividade e manutenção simples da experiência visual.
 
-Mais do que "ter um site no ar", o objetivo é gerar credibilidade e converter visitas em conversas comerciais.
+## Status do Projeto
 
-Por isso, a estrutura foi pensada para:
+Publicado e em evolução contínua, com melhorias visuais, ajustes de conteúdo e novas seções sendo incorporadas conforme a marca cresce.
 
-- Comunicar profissionalismo de forma clara
-- Facilitar atualização de conteúdo
-- Organizar leads de forma prática
-- Manter uma experiência moderna em diferentes dispositivos
+## Site Publicado
 
-## Direção da marca
-
-A identidade visual da PachBann segue uma linha limpa, forte e contemporânea, com contraste marcante e foco em legibilidade.
-
-As logos oficiais da marca são utilizadas como referência central da experiência visual.
-
-## Resumo
-
-O site da PachBann é uma plataforma institucional e comercial: apresenta a empresa, valoriza os trabalhos desenvolvidos e abre caminho para novos projetos.
+https://pach-bann.vercel.app/

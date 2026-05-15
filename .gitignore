@@ -5,3 +5,8 @@ dist/
 .env.local
 .vercel/
 Neon Pachbann.txt
+.claude/
+PROMPT_*.md
+*.log
+.DS_Store
+Thumbs.db

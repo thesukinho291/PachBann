@@ -1,5 +1,6 @@
 {
   "name": "pachbann-site",
+  "description": "Site institucional da PachBann Web Design.",
   "version": "1.0.0",
   "private": true,
   "type": "module",
