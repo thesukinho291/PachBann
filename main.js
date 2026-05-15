@@ -120,6 +120,71 @@ function withRequiredPortfolioItems(items) {
     return [...required, ...extras];
 }
 
+function fixBrokenPortugueseText(value) {
+    if (typeof value !== 'string') return value;
+
+    const replacements = [
+        ['M?rio', 'Mário'],
+        ['vis?o', 'visão'],
+        ['presen?a', 'presença'],
+        ['r?pidos', 'rápidos'],
+        ['neg?cio', 'negócio'],
+        ['neg?cios', 'negócios'],
+        ['miss?o', 'missão'],
+        ['p?ginas', 'páginas'],
+        ['convers?o', 'conversão'],
+        ['prote??o', 'proteção'],
+        ['experi?ncia', 'experiência'],
+        ['experi?ncias', 'experiências'],
+        ['intera??o', 'interação'],
+        ['t?cnico', 'técnico'],
+        ['estrat?gia', 'estratégia'],
+        ['inova??o', 'inovação'],
+        ['evolu??o', 'evolução'],
+        ['cria??o', 'criação'],
+        ['descri??o', 'descrição'],
+        ['fun??o', 'função'],
+        ['manuten??o', 'manutenção'],
+        ['satisfa??o', 'satisfação'],
+        ['localiza??o', 'localização'],
+        ['se??o', 'seção'],
+        ['conte?do', 'conteúdo'],
+        ['portf?lio', 'portfólio'],
+        ['servi?os', 'serviços'],
+        ['pr?ximo', 'próximo'],
+        ['or?amento', 'orçamento'],
+        ['inv?lidas', 'inválidas'],
+        ['sess?o', 'sessão'],
+        ['n?o', 'não'],
+        ['Ã£', 'ã'],
+        ['Ã¡', 'á'],
+        ['Ã©', 'é'],
+        ['Ã­', 'í'],
+        ['Ã³', 'ó'],
+        ['Ãº', 'ú'],
+        ['Ã§', 'ç'],
+        ['Ãª', 'ê'],
+        ['Ã´', 'ô'],
+        ['Ã‡', 'Ç']
+    ];
+
+    return replacements.reduce((text, [broken, fixed]) => text.split(broken).join(fixed), value);
+}
+
+function sanitizeSiteData(data) {
+    if (Array.isArray(data)) {
+        return data.map(sanitizeSiteData);
+    }
+
+    if (data && typeof data === 'object') {
+        return Object.fromEntries(
+            Object.entries(data).map(([key, value]) => [key, sanitizeSiteData(value)])
+        );
+    }
+
+    return fixBrokenPortugueseText(data);
+}
+
 // ───────────────────────────────────────
 // CARREGAMENTO DE DADOS
 // ───────────────────────────────────────
@@ -127,8 +192,9 @@ function loadLocalData() {
     const saved = localStorage.getItem('pachbann_site_data');
     if (saved) {
         try {
-            siteData = JSON.parse(saved);
+            siteData = sanitizeSiteData(JSON.parse(saved));
             siteData.portfolioItems = withRequiredPortfolioItems(siteData.portfolioItems);
+            localStorage.setItem('pachbann_site_data', JSON.stringify(siteData));
         } catch (e) {
             siteData = JSON.parse(JSON.stringify(defaultData));
         }
@@ -147,7 +213,7 @@ async function loadSiteData() {
 
         const result = await response.json();
         if (result?.data) {
-            siteData = result.data;
+            siteData = sanitizeSiteData(result.data);
             siteData.portfolioItems = withRequiredPortfolioItems(siteData.portfolioItems);
         } else {
             siteData = JSON.parse(JSON.stringify(defaultData));
