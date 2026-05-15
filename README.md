@@ -1,132 +1,38 @@
-# PachBann - Site Institucional
+# PachBann Web Design
 
-Este repositório contém o site institucional da PachBann Web Design.
+O site da PachBann foi criado para apresentar a marca, mostrar projetos reais e facilitar o contato de empresas que querem fortalecer sua presença digital.
 
-O projeto é um frontend estático (`HTML + CSS + JS`) com backend serverless na Vercel para persistência de dados no Neon (PostgreSQL).
+A proposta é simples: transformar ideias em experiências web profissionais, com foco em design, performance e resultado comercial.
 
-## Stack
+## Sobre o site
 
-- Frontend: HTML, CSS, JavaScript (vanilla)
-- Build: Vite
-- Backend: Vercel Functions (`/api`)
-- Banco: Neon PostgreSQL
+Este projeto funciona como vitrine oficial da PachBann e também como canal de entrada para novos clientes.
 
-## O que o projeto já faz
+Nele, a marca apresenta:
 
-- Página institucional completa e responsiva
-- Formulário de contato com envio para banco
-- Painel admin para edição de conteúdo
-- Login admin validado no banco de dados
-- Persistência do conteúdo do site no Neon
-- Persistência dos leads no Neon
+- Posicionamento e proposta de valor
+- Serviços oferecidos
+- Portfólio com projetos publicados
+- Equipe e identidade da empresa
+- Formulário de contato para geração de oportunidades
 
-## Estrutura principal
+## Objetivo principal
 
-```text
-.
-├── index.html
-├── style.css
-├── main.js
-├── api
-│   ├── _auth.js
-│   ├── admin-login.js
-│   ├── admin-logout.js
-│   ├── admin-me.js
-│   ├── leads.js
-│   └── site-content.js
-├── db
-│   └── schema.sql
-├── logo1.png
-├── logo2.png
-└── README.md
-```
+Mais do que "ter um site no ar", o objetivo é gerar credibilidade e converter visitas em conversas comerciais.
 
-## Banco de dados (Neon)
+Por isso, a estrutura foi pensada para:
 
-As tabelas usadas pelo projeto estão em `db/schema.sql`:
+- Comunicar profissionalismo de forma clara
+- Facilitar atualização de conteúdo
+- Organizar leads de forma prática
+- Manter uma experiência moderna em diferentes dispositivos
 
-- `leads`: contatos enviados pelo formulário
-- `site_content`: conteúdo editável do painel admin
-- `admin_users`: usuários autorizados do painel
+## Direção da marca
 
-No painel do Neon:
+A identidade visual da PachBann segue uma linha limpa, forte e contemporânea, com contraste marcante e foco em legibilidade.
 
-1. Abra o SQL Editor.
-2. Execute o conteúdo de `db/schema.sql`.
+As logos oficiais da marca são utilizadas como referência central da experiência visual.
 
-## Variáveis de ambiente
+## Resumo
 
-A aplicação usa:
-
-```env
-DATABASE_URL="postgresql://..."
-ADMIN_JWT_SECRET="uma-string-grande-e-secreta"
-```
-
-Essa variável deve ser configurada:
-
-- Local (arquivo `.env` ou `.env.local`)
-- Vercel (Environment Variables)
-
-## Criar usuário admin no banco
-
-1. Gere o hash da senha:
-
-```bash
-node -e "import bcrypt from 'bcryptjs'; bcrypt.hash('SUA_SENHA_FORTE', 12).then(console.log)"
-```
-
-2. No Neon SQL Editor, insira o usuário:
-
-```sql
-insert into admin_users (email, password_hash, ativo)
-values ('seu-email@dominio.com', 'COLE_O_HASH_AQUI', true)
-on conflict (email) do update set
-  password_hash = excluded.password_hash,
-  ativo = true;
-```
-
-## Rodando localmente
-
-### Apenas frontend
-
-```bash
-npm install
-npm run dev
-```
-
-### Frontend + APIs (`/api`)
-
-```bash
-npx vercel dev
-```
-
-## Deploy na Vercel
-
-1. Conecte o repositório na Vercel.
-2. Configure `DATABASE_URL` e `ADMIN_JWT_SECRET` em:
-   `Project Settings > Environment Variables`
-3. Faça deploy/redeploy.
-
-## Endpoints usados
-
-- `POST /api/admin-login`: autentica admin
-- `GET /api/admin-me`: valida sessão atual
-- `POST /api/admin-logout`: encerra sessão
-- `POST /api/leads`: salva lead do formulário
-- `GET /api/leads`: lista leads (requer sessão admin)
-- `GET /api/site-content`: carrega conteúdo do site
-- `PUT /api/site-content`: salva conteúdo editado (requer sessão admin)
-
-## Comportamento de fallback
-
-Se a API não estiver disponível em ambiente local, o frontend mantém fallback em `localStorage` para evitar perda de edição/teste.
-
-## Observações
-
-- Não versionar `.env` nem strings de conexão em arquivos públicos.
-- O envio real para banco depende da `DATABASE_URL` válida.
-
----
-
-PachBann Web Design
+O site da PachBann é uma plataforma institucional e comercial: apresenta a empresa, valoriza os trabalhos desenvolvidos e abre caminho para novos projetos.
