@@ -1670,3 +1670,368 @@ textarea.form-input {
         left: 16px;
     }
 }
+
+/* RESPONSIVE REBUILD (MOBILE FIRST) */
+.container,
+.section,
+.section-header,
+.hero,
+.hero-content,
+.hero-metrics,
+.hero-actions,
+.about-grid,
+.features-grid,
+.services-grid,
+.portfolio-grid,
+.team-grid,
+.contact-grid,
+.contact-info,
+.contact-form,
+.footer-content,
+.footer-links {
+    min-width: 0;
+}
+
+main {
+    width: 100%;
+    overflow-x: clip;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+.container {
+    padding-inline: clamp(14px, 4vw, 24px);
+}
+
+.section {
+    padding-block: clamp(68px, 10vw, 112px);
+}
+
+.section-header {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: clamp(28px, 6vw, 56px);
+}
+
+.section-title {
+    font-size: clamp(1.95rem, 10vw, 4rem);
+    line-height: 0.98;
+}
+
+.section-desc {
+    font-size: clamp(0.98rem, 3.6vw, 1.125rem);
+}
+
+.navbar-container {
+    padding-inline: clamp(14px, 4vw, 24px);
+    gap: 10px;
+}
+
+.navbar-logo {
+    min-width: 0;
+}
+
+.logo-text {
+    font-size: clamp(1rem, 4.6vw, 1.25rem);
+    white-space: nowrap;
+}
+
+.navbar-menu {
+    position: fixed;
+    top: var(--navbar-height);
+    right: 0;
+    width: min(320px, 86vw);
+    height: calc(100dvh - var(--navbar-height));
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 10px;
+    border-radius: 0;
+    border: none;
+    border-left: 1px solid var(--border);
+    background: rgba(8, 8, 8, 0.98);
+    backdrop-filter: blur(16px);
+    transform: translateX(100%);
+    transition: transform var(--transition);
+    z-index: 1105;
+}
+
+.navbar-menu.active {
+    transform: translateX(0);
+}
+
+.nav-link {
+    width: 100%;
+    text-align: left;
+    padding: 12px 14px;
+    font-size: 1rem;
+}
+
+.hamburger {
+    display: flex;
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    align-items: center;
+    padding-inline: 6px;
+    flex-shrink: 0;
+}
+
+.hero {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    min-height: auto;
+    padding: calc(var(--navbar-height) + 26px) clamp(14px, 4vw, 24px) 52px;
+}
+
+.hero-content {
+    width: 100%;
+    max-width: 100%;
+}
+
+.hero-badge {
+    font-size: clamp(0.66rem, 2.4vw, 0.78rem);
+    max-width: 100%;
+    white-space: normal;
+    text-align: center;
+}
+
+.hero-title {
+    font-size: clamp(2rem, 13vw, 6.6rem);
+    line-height: 0.92;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+
+.hero-subtitle {
+    width: 100%;
+    max-width: 100%;
+    font-size: clamp(1rem, 3.7vw, 1.25rem);
+}
+
+.hero-actions {
+    width: 100%;
+    gap: 10px;
+}
+
+.hero-actions .btn {
+    width: 100%;
+    min-height: 46px;
+}
+
+.hero-metrics {
+    grid-template-columns: 1fr;
+    width: 100%;
+}
+
+.hero-visual,
+.hero-scroll {
+    display: none;
+}
+
+.about-grid,
+.features-grid,
+.services-grid,
+.portfolio-grid,
+.team-grid,
+.contact-grid {
+    grid-template-columns: 1fr;
+}
+
+.about-grid,
+.contact-grid {
+    gap: 16px;
+}
+
+.about-content,
+.stat-item,
+.feature-item,
+.service-card,
+.team-card,
+.contact-info,
+.contact-form {
+    padding: clamp(18px, 4.4vw, 34px);
+}
+
+.team-card {
+    text-align: left;
+}
+
+.team-avatar {
+    margin-inline: 0;
+}
+
+.portfolio-item {
+    aspect-ratio: 16/11;
+}
+
+.portfolio-info {
+    padding: clamp(16px, 4vw, 30px);
+}
+
+.contact-item a,
+.contact-item span {
+    overflow-wrap: anywhere;
+}
+
+.form-input {
+    font-size: 16px;
+}
+
+.footer-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 22px;
+}
+
+.footer-links {
+    width: 100%;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.footer-links a {
+    flex: 1 1 120px;
+    padding: 8px 0;
+}
+
+.admin-entry {
+    left: 12px;
+    top: calc(var(--navbar-height) + 10px);
+}
+
+.admin-panel {
+    width: 100%;
+    right: -100%;
+}
+
+@media (min-width: 768px) {
+    .navbar-menu {
+        position: static;
+        transform: none;
+        height: auto;
+        width: auto;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        padding: 7px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.035);
+    }
+
+    .nav-link {
+        width: auto;
+        text-align: center;
+        font-size: 0.92rem;
+    }
+
+    .hamburger {
+        display: none;
+    }
+
+    .hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+        padding-top: calc(var(--navbar-height) + 44px);
+        padding-bottom: 68px;
+        gap: 28px;
+    }
+
+    .hero-content,
+    .hero-subtitle,
+    .hero-metrics {
+        margin-inline: auto;
+    }
+
+    .hero-actions {
+        justify-content: center;
+    }
+
+    .hero-actions .btn {
+        width: auto;
+        min-width: 190px;
+    }
+
+    .hero-visual {
+        display: block;
+        width: min(520px, 100%);
+        margin-inline: auto;
+    }
+
+    .features-grid,
+    .services-grid,
+    .team-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .portfolio-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .contact-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .footer-content {
+        align-items: center;
+        flex-direction: row;
+    }
+}
+
+@media (min-width: 1024px) {
+    .container {
+        padding-inline: 24px;
+    }
+
+    .hero {
+        grid-template-columns: minmax(0, 1.02fr) minmax(340px, 0.72fr);
+        text-align: left;
+        padding: 132px max(24px, calc((100vw - 1180px) / 2)) 96px;
+        gap: 44px;
+    }
+
+    .hero-content,
+    .hero-subtitle,
+    .hero-metrics {
+        margin-inline: 0;
+    }
+
+    .hero-actions {
+        justify-content: flex-start;
+    }
+
+    .hero-visual,
+    .hero-scroll {
+        display: block;
+    }
+
+    .hero-metrics {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .features-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .services-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .team-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .contact-grid {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+        gap: 26px;
+    }
+}

@@ -405,15 +405,36 @@ window.addEventListener('scroll', () => {
 });
 
 hamburger.addEventListener('click', () => {
-    hamburger.classList.toggle('active');
-    navbarMenu.classList.toggle('active');
+    const isOpen = navbarMenu.classList.toggle('active');
+    hamburger.classList.toggle('active', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
 });
 
 document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', () => {
         hamburger.classList.remove('active');
         navbarMenu.classList.remove('active');
+        document.body.style.overflow = '';
     });
+});
+
+document.addEventListener('click', (event) => {
+    if (!navbarMenu.classList.contains('active')) return;
+    const clickedInsideMenu = navbarMenu.contains(event.target);
+    const clickedHamburger = hamburger.contains(event.target);
+    if (!clickedInsideMenu && !clickedHamburger) {
+        navbarMenu.classList.remove('active');
+        hamburger.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+});
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && navbarMenu.classList.contains('active')) {
+        navbarMenu.classList.remove('active');
+        hamburger.classList.remove('active');
+        document.body.style.overflow = '';
+    }
 });
 
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
