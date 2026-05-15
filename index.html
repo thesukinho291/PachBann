@@ -226,38 +226,18 @@
         </div>
     </footer>
 
-    <!-- Admin Entry Button -->
-    <button class="admin-entry" id="admin-entry" aria-label="Acesso admin">
+    <!-- Login Button -->
+    <a class="admin-entry" id="admin-entry" href="login.html" aria-label="Login">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
             <circle cx="12" cy="8" r="4"/>
             <path d="M4 20c1.8-3.2 5-5 8-5s6.2 1.8 8 5"/>
         </svg>
-    </button>
-
-    <!-- Admin Login Modal -->
-    <div class="admin-login" id="admin-login">
-        <div class="login-box">
-            <button class="login-close" id="login-close">&times;</button>
-            <h3>Painel Admin</h3>
-            <p id="admin-auth-status">Faça login para acessar o painel admin.</p>
-            <form id="login-form">
-                <div class="login-field">
-                    <input type="email" id="login-user" placeholder="E-mail" autocomplete="username" required>
-                </div>
-                <div class="login-field">
-                    <input type="password" id="login-pass" placeholder="Senha" autocomplete="current-password" required>
-                </div>
-                <button type="submit" class="btn btn-primary btn-full">Entrar</button>
-                <p class="login-error" id="login-error">Credenciais inválidas.</p>
-            </form>
-            <button class="btn btn-ghost btn-full" id="admin-logout" style="display:none;">Sair da sessão</button>
-        </div>
-    </div>
+    </a>
 
     <!-- ADMIN PANEL -->
     <div class="admin-panel" id="admin-panel">
         <div class="admin-header">
-            <h3>Painel Admin</h3>
+            <h3>Painel</h3>
             <button class="admin-close" id="admin-close">&times;</button>
         </div>
         <div class="admin-tabs">

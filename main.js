@@ -456,96 +456,30 @@ function initPhoneMask() {
 function setAdminAuthState(authenticated, userEmail) {
     isAdminLogged = authenticated;
     const adminToggle = document.getElementById('admin-toggle');
-    const adminAuthStatus = document.getElementById('admin-auth-status');
-    const loginError = document.getElementById('login-error');
-    const loginForm = document.getElementById('login-form');
-    const logoutBtn = document.getElementById('admin-logout');
 
     if (adminToggle) adminToggle.style.display = authenticated ? 'flex' : 'none';
-    if (logoutBtn) logoutBtn.style.display = authenticated ? 'inline-flex' : 'none';
-    if (loginForm) loginForm.style.display = authenticated ? 'none' : 'block';
-    if (loginError) loginError.classList.remove('show');
-
-    if (adminAuthStatus) {
-        adminAuthStatus.textContent = authenticated
-            ? `Conectado como ${userEmail || 'admin'}`
-            : 'Faça login para acessar o painel admin.';
-    }
 }
 
 async function initAdminAuth() {
-    const loginForm = document.getElementById('login-form');
-    const loginError = document.getElementById('login-error');
-    const logoutBtn = document.getElementById('admin-logout');
     const adminToggle = document.getElementById('admin-toggle');
-    const adminEntry = document.getElementById('admin-entry');
-    const adminLogin = document.getElementById('admin-login');
-    const loginClose = document.getElementById('login-close');
+    const shouldOpenPanel = new URLSearchParams(window.location.search).get('admin') === '1';
 
     try {
         const meResponse = await fetch('/api/admin-me', { credentials: 'include' });
         if (meResponse.ok) {
             const me = await meResponse.json();
             setAdminAuthState(true, me?.user?.email || null);
+            if (shouldOpenPanel) {
+                const adminPanel = document.getElementById('admin-panel');
+                adminPanel?.classList.add('active');
+                window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+            }
         } else {
             setAdminAuthState(false, null);
         }
     } catch {
         setAdminAuthState(false, null);
     }
-
-    loginForm?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const email = document.getElementById('login-user').value.trim().toLowerCase();
-        const password = document.getElementById('login-pass').value;
-
-        try {
-            const response = await fetch('/api/admin-login', {
-                method: 'POST',
-                credentials: 'include',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
-
-            if (!response.ok) {
-                throw new Error('Credenciais invalidas');
-            }
-
-            const payload = await response.json();
-            setAdminAuthState(true, payload?.user?.email || email);
-            document.getElementById('login-user').value = '';
-            document.getElementById('login-pass').value = '';
-            adminLogin?.classList.remove('active');
-        } catch {
-            loginError.classList.add('show');
-        }
-    });
-
-    logoutBtn?.addEventListener('click', async () => {
-        try {
-            await fetch('/api/admin-logout', {
-                method: 'POST',
-                credentials: 'include'
-            });
-        } catch {}
-        setAdminAuthState(false, null);
-        const adminPanel = document.getElementById('admin-panel');
-        adminPanel?.classList.remove('active');
-    });
-
-    adminEntry?.addEventListener('click', () => {
-        adminLogin?.classList.add('active');
-    });
-
-    loginClose?.addEventListener('click', () => {
-        adminLogin?.classList.remove('active');
-    });
-
-    adminLogin?.addEventListener('click', (e) => {
-        if (e.target === adminLogin) {
-            adminLogin.classList.remove('active');
-        }
-    });
 
     adminToggle?.addEventListener('click', () => {
         if (!isAdminLogged) return;

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | PachBann</title>
+    <link rel="icon" type="image/png" href="logo2.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="login-page">
+        <a href="index.html" class="login-back">← Voltar ao site</a>
+        <section class="login-card">
+            <h1>Login</h1>
+            <p id="login-status">Entre para acessar o painel.</p>
+            <form id="login-form">
+                <div class="login-field">
+                    <input type="email" id="login-user" placeholder="E-mail" autocomplete="username" required>
+                </div>
+                <div class="login-field">
+                    <input type="password" id="login-pass" placeholder="Senha" autocomplete="current-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Entrar</button>
+                <p class="login-error" id="login-error">Credenciais inválidas.</p>
+            </form>
+            <button class="btn btn-ghost btn-full" id="logout-btn" style="display:none;">Sair da sessão</button>
+        </section>
+    </main>
+
+    <script type="module" src="login.js"></script>
+</body>
+</html>
