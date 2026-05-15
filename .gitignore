@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .env
+.env.vercel
 .env.local
 .vercel/
 Neon Pachbann.txt
