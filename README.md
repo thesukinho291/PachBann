@@ -9,7 +9,7 @@ Site institucional completo da PachBann Web Design, desenvolvido com HTML5, CSS3
 - ✅ Design moderno com dark theme e glassmorphism
 - ✅ Fully responsive (mobile, tablet, desktop)
 - ✅ Animações suaves de scroll
-- ✅ Formulário de contato integrado com Firebase Firestore
+- ✅ Formulário de contato integrado com Neon PostgreSQL
 - ✅ Partículas animadas no hero
 - ✅ Contadores animados
 - ✅ Filtros de portfólio interativos
@@ -69,9 +69,11 @@ npx vercel dev
 
 > Importante: nao coloque a connection string do Neon dentro do `main.js`, `index.html` ou qualquer arquivo publico.
 
-### 3. Firebase legado
+### 3. Conteúdo do site no Neon
 
-O código ainda mantém um fallback antigo para Firebase/localStorage caso a API `/api/leads` não esteja disponível. Para produção, prefira o Neon com `DATABASE_URL` configurada.
+O conteúdo editado no painel admin é salvo pela rota `/api/site-content` na tabela `site_content`.
+
+Se essa API estiver indisponível durante desenvolvimento, o projeto usa fallback em `localStorage`.
 
 ## 📁 Estrutura de Arquivos
 
@@ -81,9 +83,10 @@ pachbann-site/
 ├── style.css           # Estilos globais
 ├── main.js             # JavaScript principal
 ├── api/
-│   └── leads.js        # API que salva leads no Neon
+│   ├── leads.js        # API de leitura/escrita de leads no Neon
+│   └── site-content.js # API de leitura/escrita do conteúdo no Neon
 ├── db/
-│   └── schema.sql      # Tabela de leads
+│   └── schema.sql      # Tabelas leads e site_content
 ├── README.md           # Este arquivo
 ├── logo1.png           # Logo completa
 └── logo2.png           # Ícone PB
@@ -145,10 +148,10 @@ Para alterar textos, basta editar o `index.html`. Todos os textos estão em port
 
 ## 📝 Notas
 
-- O site funciona 100% offline (apenas o Firebase precisa de internet)
+- O site funciona localmente sem API para visualização, mas o salvamento em banco exige internet
 - Imagens do portfólio são placeholders (gradientes coloridos)
 - Links de redes sociais são fictícios (configure os reais)
-- O formulário funciona em modo demo sem Firebase configurado
+- Se a API estiver fora do ar, os dados do formulário ficam em `localStorage` temporariamente
 
 ---
 

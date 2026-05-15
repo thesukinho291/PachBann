@@ -11,3 +11,9 @@ create table if not exists leads (
 );
 
 create index if not exists leads_criado_em_idx on leads (criado_em desc);
+
+create table if not exists site_content (
+  id text primary key,
+  data jsonb not null,
+  atualizado_em timestamptz not null default now()
+);

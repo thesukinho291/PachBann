@@ -1,64 +1,12 @@
 /**
  * PACHBANN WEB DESIGN - MAIN.JS
- * Sistema de gerenciamento de conteúdo com Firebase Firestore
+ * Sistema de gerenciamento de conteudo com Neon + API
  */
 
-// ───────────────────────────────────────
-// CONFIGURAÇÃO FIREBASE
-// ───────────────────────────────────────
-let db = null;
-let firebaseInitialized = false;
 let siteData = {};
 let isAdminLogged = false;
 let footerClicks = 0;
 let footerClickTimer = null;
-
-// Configuração salva ou padrão
-function getFirebaseConfig() {
-    const saved = localStorage.getItem('pachbann_firebase_config');
-    if (saved) {
-        try {
-            return JSON.parse(saved);
-        } catch (e) {}
-    }
-    return {
-        apiKey: "SUA_API_KEY",
-        authDomain: "SEU_PROJETO.firebaseapp.com",
-        projectId: "SEU_PROJETO_ID",
-        storageBucket: "SEU_PROJETO.appspot.com",
-        messagingSenderId: "SEU_SENDER_ID",
-        appId: "SEU_APP_ID"
-    };
-}
-
-function saveFirebaseConfig(config) {
-    localStorage.setItem('pachbann_firebase_config', JSON.stringify(config));
-    localStorage.setItem('pachbann_firebase_configured', 'true');
-}
-
-function initFirebase() {
-    const config = getFirebaseConfig();
-    if (config.apiKey === "SUA_API_KEY") {
-        console.log('Firebase não configurado - usando modo local');
-        loadLocalData();
-        return false;
-    }
-
-    try {
-        if (!firebase.apps.length) {
-            firebase.initializeApp(config);
-        }
-        db = firebase.firestore();
-        firebaseInitialized = true;
-        console.log('Firebase conectado');
-        loadSiteData();
-        return true;
-    } catch (error) {
-        console.error('Erro Firebase:', error);
-        loadLocalData();
-        return false;
-    }
-}
 
 // ───────────────────────────────────────
 // DADOS PADRÃO
@@ -145,48 +93,44 @@ function loadLocalData() {
 
 async function loadSiteData() {
     try {
-        const doc = await db.collection('site_content').doc('main').get();
-        if (doc.exists) {
-            siteData = doc.data();
-        } else {
-            await db.collection('site_content').doc('main').set(defaultData);
-            siteData = JSON.parse(JSON.stringify(defaultData));
+        const response = await fetch('/api/site-content');
+        if (!response.ok) {
+            throw new Error('API indisponivel');
         }
+
+        const result = await response.json();
+        if (result?.data) {
+            siteData = result.data;
+        } else {
+            siteData = JSON.parse(JSON.stringify(defaultData));
+            await saveSiteData();
+        }
+
         localStorage.setItem('pachbann_site_data', JSON.stringify(siteData));
         renderAllContent();
-        setupRealtimeSync();
     } catch (error) {
-        console.error('Erro ao carregar dados:', error);
+        console.warn('Nao foi possivel carregar conteudo da API, usando modo local:', error);
         loadLocalData();
     }
 }
 
 async function saveSiteData() {
-    if (firebaseInitialized && db) {
-        try {
-            await db.collection('site_content').doc('main').set(siteData);
-            localStorage.setItem('pachbann_site_data', JSON.stringify(siteData));
-            return true;
-        } catch (error) {
-            console.error('Erro ao salvar:', error);
-            return false;
+    try {
+        const response = await fetch('/api/site-content', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(siteData)
+        });
+        if (!response.ok) {
+            throw new Error('Falha ao salvar na API');
         }
-    } else {
         localStorage.setItem('pachbann_site_data', JSON.stringify(siteData));
         return true;
+    } catch (error) {
+        console.warn('Nao foi possivel salvar na API, mantendo local:', error);
+        localStorage.setItem('pachbann_site_data', JSON.stringify(siteData));
+        return false;
     }
-}
-
-function setupRealtimeSync() {
-    if (!firebaseInitialized || !db) return;
-
-    db.collection('site_content').doc('main').onSnapshot((doc) => {
-        if (doc.exists) {
-            siteData = doc.data();
-            localStorage.setItem('pachbann_site_data', JSON.stringify(siteData));
-            renderAllContent();
-        }
-    });
 }
 
 // ───────────────────────────────────────
@@ -420,25 +364,13 @@ function initContactForm() {
             form.reset();
             setTimeout(() => form.classList.remove('success'), 5000);
         } catch (apiError) {
-            console.warn('API Neon indisponivel, usando fallback:', apiError);
-            if (firebaseInitialized && db) {
-                try {
-                    await db.collection('leads').add(formData);
-                    form.classList.add('success');
-                    form.reset();
-                    setTimeout(() => form.classList.remove('success'), 5000);
-                } catch (error) {
-                    console.error('Erro:', error);
-                    alert('Nao foi possivel enviar sua mensagem agora. Tente pelo WhatsApp.');
-                }
-            } else {
-                const leads = JSON.parse(localStorage.getItem('pachbann_leads') || '[]');
-                leads.push(formData);
-                localStorage.setItem('pachbann_leads', JSON.stringify(leads));
-                form.classList.add('success');
-                form.reset();
-                setTimeout(() => form.classList.remove('success'), 5000);
-            }
+            console.warn('API Neon indisponivel, usando fallback local:', apiError);
+            const leads = JSON.parse(localStorage.getItem('pachbann_leads') || '[]');
+            leads.push(formData);
+            localStorage.setItem('pachbann_leads', JSON.stringify(leads));
+            form.classList.add('success');
+            form.reset();
+            setTimeout(() => form.classList.remove('success'), 5000);
         }
 
         submitBtn.classList.remove('loading');
@@ -565,34 +497,6 @@ function initAdminPanel() {
             sectionBtns.forEach(b => b.classList.toggle('active', b.dataset.section === currentSection));
             renderSectionEditor();
         });
-    });
-
-    const configInputs = ['firebase-api-key', 'firebase-project-id', 'firebase-auth-domain', 'firebase-app-id'];
-    configInputs.forEach(id => {
-        const input = document.getElementById(id);
-        if (input) {
-            const saved = getFirebaseConfig();
-            const fieldMap = {
-                'firebase-api-key': 'apiKey',
-                'firebase-project-id': 'projectId',
-                'firebase-auth-domain': 'authDomain',
-                'firebase-app-id': 'appId'
-            };
-            input.value = saved[fieldMap[id]] || '';
-        }
-    });
-
-    document.getElementById('save-firebase-config')?.addEventListener('click', () => {
-        const config = {
-            apiKey: document.getElementById('firebase-api-key').value,
-            projectId: document.getElementById('firebase-project-id').value,
-            authDomain: document.getElementById('firebase-auth-domain').value,
-            storageBucket: getFirebaseConfig().storageBucket,
-            messagingSenderId: getFirebaseConfig().messagingSenderId,
-            appId: document.getElementById('firebase-app-id').value
-        };
-        saveFirebaseConfig(config);
-        alert('Configuração salva! Recarregue a página para aplicar.');
     });
 
     renderSectionEditor();
@@ -835,34 +739,36 @@ async function loadLeads() {
     const list = document.getElementById('leads-list');
     if (!list) return;
 
-    if (firebaseInitialized && db) {
-        try {
-            const snapshot = await db.collection('leads').orderBy('criadoEm', 'desc').limit(50).get();
-            if (snapshot.empty) {
-                list.innerHTML = '<p class="no-leads">Nenhum lead ainda.</p>';
-                return;
-            }
-            list.innerHTML = snapshot.docs.map(doc => {
-                const lead = doc.data();
-                const date = lead.criadoEm ? new Date(lead.criadoEm.seconds * 1000).toLocaleString('pt-BR') : 'N/A';
-                return `
-                    <div class="lead-item">
-                        <div class="lead-header">
-                            <strong>${lead.nome}</strong>
-                            <span>${date}</span>
-                        </div>
-                        <p><strong>Email:</strong> ${lead.email}</p>
-                        <p><strong>Telefone:</strong> ${lead.telefone || '-'}</p>
-                        <p><strong>Projeto:</strong> ${lead.tipoProjeto || '-'}</p>
-                        <p><strong>Mensagem:</strong> ${lead.mensagem}</p>
-                    </div>
-                `;
-            }).join('');
-        } catch (error) {
-            console.error('Erro ao carregar leads:', error);
-            list.innerHTML = '<p class="no-leads">Erro ao carregar leads.</p>';
+    try {
+        const response = await fetch('/api/leads');
+        if (!response.ok) {
+            throw new Error('API indisponivel');
         }
-    } else {
+
+        const result = await response.json();
+        const leads = Array.isArray(result?.leads) ? result.leads : [];
+        if (leads.length === 0) {
+            list.innerHTML = '<p class="no-leads">Nenhum lead ainda.</p>';
+            return;
+        }
+
+        list.innerHTML = leads.map(lead => {
+            const date = lead.criadoEm ? new Date(lead.criadoEm).toLocaleString('pt-BR') : 'N/A';
+            return `
+                <div class="lead-item">
+                    <div class="lead-header">
+                        <strong>${lead.nome}</strong>
+                        <span>${date}</span>
+                    </div>
+                    <p><strong>Email:</strong> ${lead.email}</p>
+                    <p><strong>Telefone:</strong> ${lead.telefone || '-'}</p>
+                    <p><strong>Projeto:</strong> ${lead.tipoProjeto || '-'}</p>
+                    <p><strong>Mensagem:</strong> ${lead.mensagem}</p>
+                </div>
+            `;
+        }).join('');
+    } catch (error) {
+        console.warn('Erro ao carregar leads da API, usando local:', error);
         const leads = JSON.parse(localStorage.getItem('pachbann_leads') || '[]');
         if (leads.length === 0) {
             list.innerHTML = '<p class="no-leads">Nenhum lead ainda.</p>';
@@ -890,7 +796,7 @@ async function loadLeads() {
 // INICIALIZAÇÃO
 // ───────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-    initFirebase();
+    loadSiteData();
     initAdminSecret();
     initAdminPanel();
     animateNumbers();
