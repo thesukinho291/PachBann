@@ -5,6 +5,12 @@
 
 let siteData = {};
 let isAdminLogged = false;
+let cinematicScrollState = null;
+const REMOTION_TIMELINE = {
+    fps: 30,
+    durationSeconds: 12,
+    ease: cubicBezier(0.2, 0.85, 0.25, 1)
+};
 
 // ───────────────────────────────────────
 // DADOS PADRÃO
@@ -265,6 +271,7 @@ function renderAllContent() {
     renderEquipe();
     renderContato();
     renderFooter();
+    requestAnimationFrame(initScrollDrivenExperience);
 }
 
 function renderHero() {
@@ -449,28 +456,315 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 
 function animateNumbers() {
     const counters = document.querySelectorAll('.stat-number');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const el = entry.target;
-                const target = parseInt(el.textContent);
-                let current = 0;
-                const step = target / 30;
-                const timer = setInterval(() => {
-                    current += step;
-                    if (current >= target) {
-                        el.textContent = target;
-                        clearInterval(timer);
-                    } else {
-                        el.textContent = Math.floor(current);
-                    }
-                }, 30);
+            if (!entry.isIntersecting) return;
+
+            const el = entry.target;
+            const target = parseInt(el.dataset.target || el.textContent, 10);
+            if (!Number.isFinite(target)) return;
+
+            el.dataset.target = String(target);
+
+            if (reduceMotion) {
+                el.textContent = target;
                 observer.unobserve(el);
+                return;
             }
+
+            const startedAt = performance.now();
+            const duration = 850;
+
+            const tick = (now) => {
+                const progress = Math.min((now - startedAt) / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                el.textContent = Math.round(target * eased);
+
+                if (progress < 1) {
+                    requestAnimationFrame(tick);
+                } else {
+                    el.textContent = target;
+                }
+            };
+
+            requestAnimationFrame(tick);
+            observer.unobserve(el);
         });
-    }, { threshold: 0.5 });
+    }, { threshold: 0.55 });
 
     counters.forEach(counter => observer.observe(counter));
+}
+
+function initScrollDrivenExperience() {
+    if (cinematicScrollState?.cleanup) {
+        cinematicScrollState.cleanup();
+    }
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const hasNativeScrollTimeline = CSS.supports?.('animation-timeline: scroll()') || CSS.supports?.('animation-timeline: --page');
+    const progressBar = ensureScrollProgressBar();
+    const revealTargets = getCinematicTargets();
+    const sectionScenes = Array.from(document.querySelectorAll('.hero, .scroll-story, #sobre, #servicos, #portfolio, #equipe, #contato'));
+    let ticking = false;
+    let animationFrame = null;
+    let targetScrollTop = window.scrollY || document.documentElement.scrollTop;
+    let smoothScrollTop = targetScrollTop;
+
+    document.body.classList.add('cinematic-ready');
+    document.body.style.setProperty('--scene-bg', '#050505');
+
+    revealTargets.forEach((target, index) => {
+        target.classList.add('cinematic-reveal');
+        target.style.setProperty('--reveal-delay', `${Math.min(index % 5, 4) * 48}ms`);
+    });
+
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            entry.target.classList.toggle('is-visible', entry.isIntersecting);
+        });
+    }, {
+        rootMargin: '0px 0px -12% 0px',
+        threshold: 0.16
+    });
+
+    const sceneObserver = new IntersectionObserver((entries) => {
+        const visibleScenes = entries
+            .filter(entry => entry.isIntersecting)
+            .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+        if (!visibleScenes.length) return;
+
+        const nextColor = visibleScenes[0].target.dataset.sceneColor || '#050505';
+        document.body.style.setProperty('--scene-bg', nextColor);
+    }, {
+        threshold: [0.25, 0.45, 0.65]
+    });
+
+    revealTargets.forEach(target => revealObserver.observe(target));
+    sectionScenes.forEach((section, index) => {
+        section.dataset.sceneColor = [
+            '#050505',
+            '#060706',
+            '#070807',
+            '#060708',
+            '#070707',
+            '#060606',
+            '#060806'
+        ][index] || '#050505';
+        section.classList.add('cinematic-scene');
+        sceneObserver.observe(section);
+    });
+
+    const updateScrollEffects = () => {
+        targetScrollTop = window.scrollY || document.documentElement.scrollTop;
+        smoothScrollTop += (targetScrollTop - smoothScrollTop) * 0.085;
+
+        const scrollable = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+        const progress = Math.min(smoothScrollTop / scrollable, 1);
+
+        if (!hasNativeScrollTimeline) {
+            progressBar.style.transform = `scaleX(${progress})`;
+        }
+        updateHeroParallax(smoothScrollTop, reduceMotion);
+        updateSlideScenes(reduceMotion, smoothScrollTop);
+
+        if (Math.abs(targetScrollTop - smoothScrollTop) > 0.45) {
+            animationFrame = requestAnimationFrame(updateScrollEffects);
+        } else {
+            smoothScrollTop = targetScrollTop;
+            ticking = false;
+            animationFrame = null;
+        }
+    };
+
+    const requestTick = () => {
+        if (ticking) return;
+        ticking = true;
+        animationFrame = requestAnimationFrame(updateScrollEffects);
+    };
+
+    window.addEventListener('scroll', requestTick, { passive: true });
+    window.addEventListener('resize', requestTick);
+
+    animateNumbers();
+    updateScrollEffects();
+
+    cinematicScrollState = {
+        cleanup() {
+            window.removeEventListener('scroll', requestTick);
+            window.removeEventListener('resize', requestTick);
+            if (animationFrame) cancelAnimationFrame(animationFrame);
+            revealObserver.disconnect();
+            sceneObserver.disconnect();
+        }
+    };
+}
+
+function ensureScrollProgressBar() {
+    let progress = document.querySelector('.scroll-progress-bar');
+    if (!progress) {
+        progress = document.createElement('div');
+        progress.className = 'scroll-progress-bar';
+        progress.setAttribute('aria-hidden', 'true');
+        document.body.prepend(progress);
+    }
+    return progress;
+}
+
+function getCinematicTargets() {
+    return Array.from(document.querySelectorAll([
+        '.section-header',
+        '.about-content p',
+        '.stat-item',
+        '.feature-item',
+        '.service-card',
+        '.portfolio-item',
+        '.team-card',
+        '.contact-info',
+        '.contact-form',
+        '.contact-cta',
+        '.story-slide h3',
+        '.story-slide .slide-kicker',
+        '.story-slide b',
+        '.story-slide i',
+        '.story-slide strong'
+    ].join(','))).filter(target => !target.closest('.admin-panel'));
+}
+
+function updateHeroParallax(scrollTop, reduceMotion) {
+    const hero = document.querySelector('.hero');
+    if (!hero) return;
+
+    const heroRect = hero.getBoundingClientRect();
+    const heroProgress = Math.min(Math.max(scrollTop / Math.max(hero.offsetHeight, 1), 0), 1);
+    const frame = scrollProgressToFrame(heroProgress);
+    const active = heroRect.bottom > 0 && heroRect.top < window.innerHeight;
+
+    if (!active) return;
+
+    const motionAmount = reduceMotion ? 0.22 : 0.52;
+    const contentY = interpolateFrame(frame, [0, 7 * REMOTION_TIMELINE.fps], [0, -58 * motionAmount]);
+    const titleY = interpolateFrame(frame, [0, 5 * REMOTION_TIMELINE.fps], [0, -18 * motionAmount]);
+    const subtitleY = interpolateFrame(frame, [0, 6 * REMOTION_TIMELINE.fps], [0, -10 * motionAmount]);
+    const actionsY = interpolateFrame(frame, [0, 4 * REMOTION_TIMELINE.fps], [0, -4 * motionAmount]);
+    const visualY = interpolateFrame(frame, [0, 8 * REMOTION_TIMELINE.fps], [0, 44 * motionAmount]);
+    const visualRotate = interpolateFrame(frame, [0, 8 * REMOTION_TIMELINE.fps], [0, -3.5 * motionAmount]);
+    const heroScale = interpolateFrame(frame, [0, 7 * REMOTION_TIMELINE.fps], [1.022, 1.022 - 0.022 * motionAmount]);
+
+    document.documentElement.style.setProperty('--hero-parallax-bg', `${interpolateFrame(frame, [0, 8 * REMOTION_TIMELINE.fps], [0, 48])}px`);
+    document.documentElement.style.setProperty('--hero-content-y', `${contentY}px`);
+    document.documentElement.style.setProperty('--hero-title-y', `${titleY}px`);
+    document.documentElement.style.setProperty('--hero-subtitle-y', `${subtitleY}px`);
+    document.documentElement.style.setProperty('--hero-actions-y', `${actionsY}px`);
+    document.documentElement.style.setProperty('--hero-visual-y', `${visualY}px`);
+    document.documentElement.style.setProperty('--hero-visual-rotate', `${visualRotate}deg`);
+    document.documentElement.style.setProperty('--hero-scale', heroScale.toFixed(3));
+}
+
+function updateSlideScenes(reduceMotion, smoothScrollTop) {
+    const story = document.querySelector('.scroll-story');
+    const track = document.querySelector('.slide-track');
+    const slides = Array.from(document.querySelectorAll('.story-slide'));
+    const progressFill = document.querySelector('.slide-progress i');
+    const step = document.querySelector('.orbit-step');
+    const stage = document.querySelector('.slide-stage');
+
+    if (!story || !track || !slides.length) {
+        return;
+    }
+
+    const scrollSpan = Math.max(story.offsetHeight - window.innerHeight, 1);
+    const progress = Math.min(Math.max((smoothScrollTop - story.offsetTop) / scrollSpan, 0), 1);
+    const frame = scrollProgressToFrame(progress);
+    const viewportHeight = Math.max(stage.clientHeight - 42, 1);
+    const scrollDistance = Math.max(track.scrollHeight - viewportHeight, 0);
+    const trackY = -interpolateFrame(frame, [0, REMOTION_TIMELINE.durationSeconds * REMOTION_TIMELINE.fps], [0, scrollDistance], { easing: false });
+    const viewportCenter = -trackY + viewportHeight * 0.48;
+    let activeIndex = 0;
+    let closestDistance = Infinity;
+
+    track.style.transform = `translate3d(0, ${trackY}px, 0)`;
+
+    slides.forEach((slide, index) => {
+        const slideCenter = slide.offsetTop + slide.offsetHeight * 0.5;
+        const normalizedDistance = Math.abs(slideCenter - viewportCenter) / viewportHeight;
+        const localProgress = Math.min(normalizedDistance, 1);
+        const opacity = Math.max(0.46, 1 - normalizedDistance * 0.72);
+        const scale = interpolateFrame(localProgress, [0, 1], [1, 0.982], { asProgress: true });
+        const blur = interpolateFrame(localProgress, [0, 1], [0, 2.2], { asProgress: true });
+        const lift = interpolateFrame(localProgress, [0, 1], [0, 10], { asProgress: true });
+
+        if (normalizedDistance < closestDistance) {
+            closestDistance = normalizedDistance;
+            activeIndex = index;
+        }
+
+        slide.style.opacity = opacity.toFixed(3);
+        slide.style.transform = `translate3d(0, ${lift}px, 0) scale(${scale.toFixed(3)})`;
+        slide.style.filter = `blur(${blur.toFixed(2)}px)`;
+    });
+
+    slides.forEach((slide, index) => {
+        slide.classList.toggle('is-active', index === activeIndex);
+    });
+
+    if (stage) {
+        const stageMotion = reduceMotion ? 0.18 : 0.34;
+        const rotateX = interpolateFrame(frame, [0, 12 * REMOTION_TIMELINE.fps], [5, -3]) * stageMotion;
+        const rotateY = interpolateFrame(frame, [0, 12 * REMOTION_TIMELINE.fps], [-6, 6]) * stageMotion;
+        const scale = interpolateFrame(frame, [0, 12 * REMOTION_TIMELINE.fps], [0.985, 1.003]);
+        const z = interpolateFrame(frame, [0, 12 * REMOTION_TIMELINE.fps], [-16, 18]) * stageMotion;
+        stage.style.transform = `translateZ(${z}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(${scale})`;
+    }
+
+    if (progressFill) {
+        progressFill.style.transform = `scaleX(${Math.max(progress, 1 / slides.length)})`;
+    }
+
+    if (step) {
+        step.textContent = String(activeIndex + 1).padStart(2, '0');
+    }
+}
+
+function scrollProgressToFrame(progress) {
+    const clamped = Math.min(Math.max(progress, 0), 1);
+    return clamped * REMOTION_TIMELINE.durationSeconds * REMOTION_TIMELINE.fps;
+}
+
+function interpolateFrame(value, inputRange, outputRange, options = {}) {
+    const [inputMin, inputMax] = inputRange;
+    const [outputMin, outputMax] = outputRange;
+    const rawProgress = options.asProgress
+        ? value
+        : (value - inputMin) / Math.max(inputMax - inputMin, 0.0001);
+    const clamped = Math.min(Math.max(rawProgress, 0), 1);
+    const eased = options.easing === false ? clamped : REMOTION_TIMELINE.ease(clamped);
+    return outputMin + (outputMax - outputMin) * eased;
+}
+
+function cubicBezier(x1, y1, x2, y2) {
+    const cx = 3 * x1;
+    const bx = 3 * (x2 - x1) - cx;
+    const ax = 1 - cx - bx;
+    const cy = 3 * y1;
+    const by = 3 * (y2 - y1) - cy;
+    const ay = 1 - cy - by;
+
+    const sampleCurveX = (t) => ((ax * t + bx) * t + cx) * t;
+    const sampleCurveY = (t) => ((ay * t + by) * t + cy) * t;
+    const sampleDerivativeX = (t) => (3 * ax * t + 2 * bx) * t + cx;
+
+    return (x) => {
+        let t = x;
+        for (let i = 0; i < 5; i += 1) {
+            const derivative = sampleDerivativeX(t);
+            if (Math.abs(derivative) < 0.001) break;
+            t -= (sampleCurveX(t) - x) / derivative;
+        }
+        return sampleCurveY(Math.min(Math.max(t, 0), 1));
+    };
 }
 
 // ───────────────────────────────────────
@@ -1188,7 +1482,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadSiteData();
     initAdminAuth();
     initAdminPanel();
-    animateNumbers();
     initPhoneMask();
     initContactForm();
 });
