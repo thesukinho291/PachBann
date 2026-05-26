@@ -1507,6 +1507,66 @@ async function loadLeads() {
     }
 }
 
+function initMouseInteractions() {
+    const supportsPointer = window.matchMedia('(pointer: fine)').matches;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!supportsPointer || reduceMotion) return;
+
+    const root = document.documentElement;
+    const hero = document.querySelector('.hero');
+    let ticking = false;
+    let pointerX = window.innerWidth / 2;
+    let pointerY = window.innerHeight / 2;
+
+    document.body.classList.add('has-pointer');
+
+    const updatePointerEffects = () => {
+        ticking = false;
+        root.style.setProperty('--mouse-x', `${pointerX}px`);
+        root.style.setProperty('--mouse-y', `${pointerY}px`);
+
+        if (!hero) return;
+        const rect = hero.getBoundingClientRect();
+        const insideHero = pointerY >= rect.top && pointerY <= rect.bottom;
+        if (!insideHero) {
+            root.style.setProperty('--hero-mouse-x', '0deg');
+            root.style.setProperty('--hero-mouse-y', '0deg');
+            root.style.setProperty('--hero-mouse-shift-x', '0px');
+            root.style.setProperty('--hero-mouse-shift-y', '0px');
+            return;
+        }
+
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const normalizedX = (pointerX - centerX) / Math.max(rect.width / 2, 1);
+        const normalizedY = (pointerY - centerY) / Math.max(rect.height / 2, 1);
+
+        root.style.setProperty('--hero-mouse-x', `${(normalizedX * 4).toFixed(2)}deg`);
+        root.style.setProperty('--hero-mouse-y', `${(-normalizedY * 3).toFixed(2)}deg`);
+        root.style.setProperty('--hero-mouse-shift-x', `${(normalizedX * 8).toFixed(1)}px`);
+        root.style.setProperty('--hero-mouse-shift-y', `${(normalizedY * 8).toFixed(1)}px`);
+    };
+
+    window.addEventListener('pointermove', (event) => {
+        pointerX = event.clientX;
+        pointerY = event.clientY;
+        if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(updatePointerEffects);
+        }
+    }, { passive: true });
+
+    document.addEventListener('pointermove', (event) => {
+        const card = event.target.closest?.('.service-card');
+        if (!card) return;
+        const rect = card.getBoundingClientRect();
+        const x = ((event.clientX - rect.left) / Math.max(rect.width, 1)) * 100;
+        const y = ((event.clientY - rect.top) / Math.max(rect.height, 1)) * 100;
+        card.style.setProperty('--card-glow-x', `${x.toFixed(1)}%`);
+        card.style.setProperty('--card-glow-y', `${y.toFixed(1)}%`);
+    }, { passive: true });
+}
+
 // ───────────────────────────────────────
 // INICIALIZAÇÃO
 // ───────────────────────────────────────
@@ -1516,4 +1576,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initAdminPanel();
     initPhoneMask();
     initContactForm();
+    initMouseInteractions();
 });

@@ -28,6 +28,14 @@
     --hero-actions-y: 0px;
     --hero-visual-y: 0px;
     --hero-visual-rotate: 0deg;
+    --hero-mouse-x: 0deg;
+    --hero-mouse-y: 0deg;
+    --hero-mouse-shift-x: 0px;
+    --hero-mouse-shift-y: 0px;
+    --mouse-x: 50vw;
+    --mouse-y: 50vh;
+    --card-glow-x: 50%;
+    --card-glow-y: 50%;
     --hero-scale: 1.022;
     --cinematic-ease: cubic-bezier(0.2, 0.85, 0.25, 1);
 }
@@ -71,6 +79,26 @@ body::before {
     z-index: -1;
     transform: translateY(calc(var(--hero-parallax-bg) * -0.16));
     transition: background 0.95s var(--cinematic-ease), transform 0.28s linear;
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(
+        420px circle at var(--mouse-x) var(--mouse-y),
+        rgba(215, 255, 122, 0.07),
+        rgba(245, 245, 247, 0.025) 28%,
+        transparent 62%
+    );
+    opacity: 0;
+    transition: opacity 0.35s ease;
+}
+
+body.has-pointer::after {
+    opacity: 1;
 }
 
 .scroll-progress-bar {
@@ -389,8 +417,12 @@ img {
     position: relative;
     z-index: 1;
     perspective: 1200px;
-    transform: translate3d(0, var(--hero-visual-y), 0) rotateY(var(--hero-visual-rotate));
+    transform:
+        translate3d(var(--hero-mouse-shift-x), calc(var(--hero-visual-y) + var(--hero-mouse-shift-y)), 0)
+        rotateX(var(--hero-mouse-y))
+        rotateY(calc(var(--hero-visual-rotate) + var(--hero-mouse-x)));
     will-change: transform;
+    transition: transform 0.18s ease-out;
 }
 
 .brand-showcase {
@@ -1129,6 +1161,8 @@ img {
 
 /* BUTTONS */
 .btn {
+    position: relative;
+    overflow: hidden;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1139,8 +1173,27 @@ img {
     font-weight: 500;
     border-radius: var(--radius-sm);
     cursor: pointer;
-    transition: var(--transition);
+    transition: transform 0.25s ease, border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
     border: none;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    background: linear-gradient(120deg, transparent 20%, rgba(255, 255, 255, 0.5), transparent 80%);
+    transform: translateX(-120%);
+    transition: transform 0.55s ease;
+    pointer-events: none;
+}
+
+.btn:hover::before {
+    transform: translateX(120%);
+}
+
+.btn > * {
+    position: relative;
+    z-index: 1;
 }
 
 .btn-primary {
@@ -1152,6 +1205,7 @@ img {
 .btn-primary:hover {
     background: #eefcc0;
     transform: translateY(-2px);
+    box-shadow: 0 16px 38px rgba(215, 255, 122, 0.18);
 }
 
 .btn-ghost {
@@ -1163,6 +1217,7 @@ img {
 .btn-ghost:hover {
     background: var(--accent-soft);
     border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
 }
 
 .btn-whatsapp {
@@ -1320,6 +1375,8 @@ img {
 }
 
 .service-card {
+    position: relative;
+    overflow: hidden;
     padding: 34px;
     background: var(--bg-card);
     border-radius: var(--radius);
@@ -1330,11 +1387,34 @@ img {
     will-change: transform, opacity, filter;
 }
 
+.service-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        240px circle at var(--card-glow-x) var(--card-glow-y),
+        rgba(215, 255, 122, 0.12),
+        transparent 58%
+    );
+    opacity: 0;
+    transition: opacity 0.28s ease;
+    pointer-events: none;
+}
+
+.service-card:hover::before {
+    opacity: 1;
+}
+
+.service-card > * {
+    position: relative;
+    z-index: 1;
+}
+
 .service-card:hover {
-    border-color: rgba(245, 245, 247, 0.2);
+    border-color: rgba(215, 255, 122, 0.28);
     background: rgba(255, 255, 255, 0.062);
-    transform: translateY(-2px) scale(1.004);
-    box-shadow: 0 18px 56px rgba(0, 0, 0, 0.22);
+    transform: translateY(-5px) scale(1.006);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28), 0 0 34px rgba(215, 255, 122, 0.045);
 }
 
 .service-card:nth-child(-n + 3) {
@@ -1388,8 +1468,26 @@ img {
     background-position: center, center;
     background-repeat: no-repeat, no-repeat;
     opacity: 0.92;
-    transition: var(--transition);
+    transition: transform 0.45s var(--cinematic-ease), opacity 0.3s ease, border-color 0.3s ease, box-shadow 0.45s ease;
     will-change: transform, opacity;
+}
+
+.portfolio-item::after {
+    content: 'Ver projeto';
+    position: absolute;
+    right: 18px;
+    bottom: 18px;
+    z-index: 3;
+    padding: 10px 14px;
+    color: var(--bg-primary);
+    background: var(--accent);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 800;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.28s ease, transform 0.28s ease;
+    pointer-events: none;
 }
 
 .portfolio-item::before {
@@ -1405,9 +1503,14 @@ img {
     opacity: 1;
 }
 
+.portfolio-item:hover::after {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .portfolio-item:hover {
     opacity: 1;
-    transform: translateY(-3px) scale(1.008);
+    transform: translateY(-6px) scale(1.012);
     border-color: rgba(245, 245, 247, 0.2);
     box-shadow: 0 24px 64px rgba(0, 0, 0, 0.34);
 }
@@ -3352,6 +3455,13 @@ body {
 
     .brand-showcase img {
         opacity: 0.78;
+    }
+
+    body::after,
+    .btn::before,
+    .service-card::before,
+    .portfolio-item::after {
+        display: none;
     }
 }
 
