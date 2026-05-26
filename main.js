@@ -56,17 +56,19 @@ const defaultData = {
             id: 'p5',
             categoria: 'Institucional',
             titulo: 'Fort Alimentos',
+            descricao: 'Site institucional com foco em credibilidade, apresentação clara da empresa e acesso rápido aos canais de contato.',
             cor: '#22c55e',
             link: 'https://fort-alimentos.vercel.app/',
-            imagem: 'https://image.thum.io/get/width/1200/noanimate/https://fort-alimentos.vercel.app/'
+            imagem: '/portfolio/fort-alimentos-cover.jpg'
         },
         {
             id: 'p6',
             categoria: 'Landing Page',
             titulo: 'Toninho Corredor',
+            descricao: 'Landing page direta para fortalecer presença digital, destacar trajetória e facilitar o primeiro contato.',
             cor: '#ef4444',
             link: 'https://toninhocorredor.vercel.app/',
-            imagem: 'https://image.thum.io/get/width/1200/noanimate/https://toninhocorredor.vercel.app/'
+            imagem: '/portfolio/toninho-corredor-cover.jpg'
         }
     ],
     equipe: {
@@ -96,19 +98,26 @@ const requiredPortfolioProjects = [
         id: 'p5',
         categoria: 'Institucional',
         titulo: 'Fort Alimentos',
+        descricao: 'Site institucional com foco em credibilidade, apresentação clara da empresa e acesso rápido aos canais de contato.',
         cor: '#22c55e',
         link: 'https://fort-alimentos.vercel.app/',
-        imagem: 'https://image.thum.io/get/width/1200/noanimate/https://fort-alimentos.vercel.app/'
+        imagem: '/portfolio/fort-alimentos-cover.jpg'
     },
     {
         id: 'p6',
         categoria: 'Landing Page',
         titulo: 'Toninho Corredor',
+        descricao: 'Landing page direta para fortalecer presença digital, destacar trajetória e facilitar o primeiro contato.',
         cor: '#ef4444',
         link: 'https://toninhocorredor.vercel.app/',
-        imagem: 'https://image.thum.io/get/width/1200/noanimate/https://toninhocorredor.vercel.app/'
+        imagem: '/portfolio/toninho-corredor-cover.jpg'
     }
 ];
+
+const lockedPortfolioImages = {
+    p5: '/portfolio/fort-alimentos-cover.jpg',
+    p6: '/portfolio/toninho-corredor-cover.jpg'
+};
 
 function withRequiredPortfolioItems(items) {
     const list = Array.isArray(items) ? items : [];
@@ -116,7 +125,10 @@ function withRequiredPortfolioItems(items) {
         const existing = list.find(
             (item) => item?.id === project.id || item?.link === project.link || item?.titulo === project.titulo
         );
-        return existing ? { ...project, ...existing } : { ...project };
+        const merged = existing ? { ...project, ...existing } : { ...project };
+        return lockedPortfolioImages[project.id]
+            ? { ...merged, imagem: lockedPortfolioImages[project.id] }
+            : merged;
     });
     const extras = list.filter((item) => {
         return !requiredPortfolioProjects.some(
@@ -215,6 +227,12 @@ async function loadSiteData() {
         const response = await fetch('/api/site-content');
         if (!response.ok) {
             throw new Error('API indisponivel');
+        }
+
+        const contentType = response.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+            loadLocalData();
+            return;
         }
 
         const result = await response.json();
@@ -353,9 +371,22 @@ function renderPortfolio() {
             <div class="portfolio-info">
                 <span class="portfolio-cat">${p.categoria}</span>
                 <h4>${p.titulo}</h4>
+                <p>${p.descricao || portfolioDescriptionFor(p)}</p>
+                <span class="portfolio-action">Ver projeto</span>
             </div>
         </a>
     `).join('');
+}
+
+function portfolioDescriptionFor(project) {
+    const title = (project?.titulo || '').toLowerCase();
+    if (title.includes('fort')) {
+        return 'Site institucional com foco em credibilidade, apresentação clara da empresa e acesso rápido aos canais de contato.';
+    }
+    if (title.includes('toninho')) {
+        return 'Landing page direta para fortalecer presença digital, destacar trajetória e facilitar o primeiro contato.';
+    }
+    return 'Projeto desenvolvido para unir visual profissional, navegação clara e uma experiência pronta para gerar confiança.';
 }
 
 function renderEquipe() {
@@ -506,7 +537,7 @@ function initScrollDrivenExperience() {
     const hasNativeScrollTimeline = CSS.supports?.('animation-timeline: scroll()') || CSS.supports?.('animation-timeline: --page');
     const progressBar = ensureScrollProgressBar();
     const revealTargets = getCinematicTargets();
-    const sectionScenes = Array.from(document.querySelectorAll('.hero, .scroll-story, #sobre, #servicos, #portfolio, #equipe, #contato'));
+    const sectionScenes = Array.from(document.querySelectorAll('.hero, .scroll-story, #sobre, #servicos, #processo, #portfolio, #equipe, #contato'));
     let ticking = false;
     let animationFrame = null;
     let targetScrollTop = window.scrollY || document.documentElement.scrollTop;
@@ -620,6 +651,7 @@ function getCinematicTargets() {
         '.stat-item',
         '.feature-item',
         '.service-card',
+        '.process-card',
         '.portfolio-item',
         '.team-card',
         '.contact-info',
