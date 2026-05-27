@@ -1567,6 +1567,166 @@ function initMouseInteractions() {
     }, { passive: true });
 }
 
+function initNetworkBackground() {
+    const canvas = document.getElementById('network-background');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    const supportsPointer = window.matchMedia('(pointer: fine)').matches;
+    const points = [];
+    const pointer = {
+        x: -1000,
+        y: -1000,
+        active: false
+    };
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+    let rafId = null;
+
+    const config = {
+        spacing: 112,
+        linkDistance: 178,
+        influenceRadius: supportsPointer ? 260 : 0,
+        pushStrength: 82,
+        returnEase: 0.12,
+        lineColor: 'rgba(215, 255, 122, 0.28)',
+        lineActiveColor: 'rgba(215, 255, 122, 0.66)',
+        dotColor: 'rgba(245, 245, 247, 0.44)'
+    };
+
+    const resize = () => {
+        dpr = Math.min(window.devicePixelRatio || 1, 1.6);
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = Math.floor(width * dpr);
+        canvas.height = Math.floor(height * dpr);
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        buildPoints();
+        drawNetwork();
+    };
+
+    const buildPoints = () => {
+        points.length = 0;
+        const columns = Math.ceil(width / config.spacing) + 2;
+        const rows = Math.ceil(height / config.spacing) + 2;
+
+        for (let y = -1; y < rows; y += 1) {
+            for (let x = -1; x < columns; x += 1) {
+                const offsetX = ((y % 2) * config.spacing) / 2;
+                const baseX = x * config.spacing + offsetX;
+                const baseY = y * config.spacing;
+                const jitter = Math.sin((x + 1) * 12.989 + (y + 1) * 78.233) * 43758.5453;
+                const normalized = jitter - Math.floor(jitter);
+                points.push({
+                    baseX: baseX + (normalized - 0.5) * 18,
+                    baseY: baseY + (0.5 - normalized) * 18,
+                    x: baseX,
+                    y: baseY
+                });
+            }
+        }
+    };
+
+    const drawNetwork = () => {
+        ctx.clearRect(0, 0, width, height);
+
+        for (let i = 0; i < points.length; i += 1) {
+            const point = points[i];
+            for (let j = i + 1; j < points.length; j += 1) {
+                const other = points[j];
+                const dx = point.x - other.x;
+                const dy = point.y - other.y;
+                const distance = Math.hypot(dx, dy);
+                if (distance > config.linkDistance) continue;
+
+                const midX = (point.x + other.x) / 2;
+                const midY = (point.y + other.y) / 2;
+                const pointerDistance = pointer.active ? Math.hypot(pointer.x - midX, pointer.y - midY) : Infinity;
+                const active = pointerDistance < config.influenceRadius;
+                const alpha = Math.max(0.16, (1 - distance / config.linkDistance) * (active ? 1 : 0.82));
+
+                ctx.strokeStyle = active ? config.lineActiveColor : config.lineColor;
+                ctx.globalAlpha = alpha;
+                ctx.lineWidth = active ? 1.55 : 1.02;
+                ctx.beginPath();
+                ctx.moveTo(point.x, point.y);
+                ctx.lineTo(other.x, other.y);
+                ctx.stroke();
+            }
+        }
+
+        ctx.globalAlpha = 1;
+        points.forEach((point) => {
+            ctx.fillStyle = config.dotColor;
+            ctx.beginPath();
+            ctx.arc(point.x, point.y, 1.25, 0, Math.PI * 2);
+            ctx.fill();
+        });
+    };
+
+    const updateNetwork = () => {
+        let shouldContinue = pointer.active;
+
+        points.forEach((point) => {
+            let targetX = point.baseX;
+            let targetY = point.baseY;
+
+            if (pointer.active) {
+                const dx = point.baseX - pointer.x;
+                const dy = point.baseY - pointer.y;
+                const distance = Math.hypot(dx, dy);
+                if (distance < config.influenceRadius) {
+                    const force = (1 - distance / config.influenceRadius) ** 2;
+                    const angle = Math.atan2(dy, dx);
+                    targetX += Math.cos(angle) * config.pushStrength * force;
+                    targetY += Math.sin(angle) * config.pushStrength * force;
+                }
+            }
+
+            point.x += (targetX - point.x) * config.returnEase;
+            point.y += (targetY - point.y) * config.returnEase;
+
+            if (Math.abs(targetX - point.x) > 0.1 || Math.abs(targetY - point.y) > 0.1) {
+                shouldContinue = true;
+            }
+        });
+
+        drawNetwork();
+
+        if (shouldContinue) {
+            rafId = requestAnimationFrame(updateNetwork);
+        } else {
+            rafId = null;
+        }
+    };
+
+    const requestNetworkFrame = () => {
+        if (rafId) return;
+        rafId = requestAnimationFrame(updateNetwork);
+    };
+
+    window.addEventListener('resize', resize);
+
+    if (supportsPointer) {
+        window.addEventListener('pointermove', (event) => {
+            pointer.x = event.clientX;
+            pointer.y = event.clientY;
+            pointer.active = true;
+            requestNetworkFrame();
+        }, { passive: true });
+
+        window.addEventListener('pointerleave', () => {
+            pointer.active = false;
+            requestNetworkFrame();
+        });
+    }
+
+    resize();
+}
+
 // ───────────────────────────────────────
 // INICIALIZAÇÃO
 // ───────────────────────────────────────
@@ -1577,4 +1737,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initPhoneMask();
     initContactForm();
     initMouseInteractions();
+    initNetworkBackground();
 });
