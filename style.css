@@ -1463,12 +1463,14 @@ img {
 /* PORTFOLIO */
 .portfolio-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 28px;
 }
 
 .portfolio-item {
     position: relative;
+    width: 100%;
+    min-width: 0;
     display: flex;
     align-items: flex-end;
     min-height: clamp(320px, 34vw, 440px);
@@ -3499,6 +3501,16 @@ body {
 }
 
 @media (max-width: 767px) {
+    .cinematic-reveal,
+    .cinematic-reveal:nth-child(3n + 1),
+    .cinematic-reveal:nth-child(3n + 2) {
+        opacity: 1;
+        transform: none;
+        filter: none;
+        transition: border-color 0.25s ease, box-shadow 0.25s ease;
+        will-change: auto;
+    }
+
     .hero {
         padding-inline: clamp(18px, 5vw, 26px);
         overflow-x: clip;
@@ -3577,7 +3589,27 @@ body {
     }
 
     .portfolio-item {
-        min-height: 360px;
+        width: 100%;
+        max-width: 100%;
+        min-height: clamp(220px, 58vw, 360px);
+    }
+
+    .portfolio-item[data-id="p5"],
+    .portfolio-item[data-id="p6"] {
+        min-height: 0;
+        background-image: var(--cover-image);
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-color: #050505;
+    }
+
+    .portfolio-item[data-id="p5"] {
+        aspect-ratio: 1760 / 735;
+    }
+
+    .portfolio-item[data-id="p6"] {
+        aspect-ratio: 1878 / 852;
     }
 
     .portfolio-info {
