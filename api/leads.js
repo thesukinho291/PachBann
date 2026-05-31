@@ -1,7 +1,67 @@
 import { neon } from '@neondatabase/serverless';
 import { getSessionFromRequest } from './_auth.js';
 
+const CONTACT_TO_EMAIL = process.env.CONTACT_TO_EMAIL || 'contato@pachbann.com.br';
+const CONTACT_FROM_EMAIL = process.env.CONTACT_FROM_EMAIL || 'PachBann <onboarding@resend.dev>';
+
 const cleanText = (value, maxLength) => String(value || '').trim().slice(0, maxLength);
+
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function leadEmailHtml(lead) {
+  const rows = [
+    ['Nome', lead.nome],
+    ['E-mail', lead.email],
+    ['Telefone', lead.telefone || '-'],
+    ['Tipo de projeto', lead.tipoProjeto || '-'],
+    ['Mensagem', lead.mensagem],
+  ];
+
+  return `
+    <div style="font-family:Arial,sans-serif;color:#111;line-height:1.5">
+      <h2>Novo contato pelo site PachBann</h2>
+      ${rows.map(([label, value]) => `
+        <p><strong>${label}:</strong><br>${escapeHtml(value).replace(/\n/g, '<br>')}</p>
+      `).join('')}
+    </div>
+  `;
+}
+
+async function sendLeadEmail(lead) {
+  if (!process.env.RESEND_API_KEY) {
+    console.warn('RESEND_API_KEY nao configurada; lead salvo sem envio de email.');
+    return { skipped: true };
+  }
+
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: CONTACT_FROM_EMAIL,
+      to: [CONTACT_TO_EMAIL],
+      reply_to: lead.email,
+      subject: `Novo contato no site - ${lead.nome}`,
+      html: leadEmailHtml(lead),
+    }),
+  });
+
+  if (!response.ok) {
+    const details = await response.text();
+    throw new Error(`Falha ao enviar email do lead: ${response.status} ${details}`);
+  }
+
+  return response.json();
+}
 
 export default async function handler(req, res) {
   if (!process.env.DATABASE_URL) {
@@ -67,6 +127,12 @@ export default async function handler(req, res) {
       )
       returning id, criado_em
     `;
+
+    try {
+      await sendLeadEmail(lead);
+    } catch (emailError) {
+      console.error('Lead salvo, mas houve erro ao enviar email:', emailError);
+    }
 
     return res.status(201).json({ ok: true, lead: rows[0] });
   } catch (error) {

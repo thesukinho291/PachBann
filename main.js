@@ -85,7 +85,7 @@ const defaultData = {
         titulo: 'Fale Conosco',
         subtitulo: 'Vamos discutir seu próximo projeto?',
         telefone: '(15) 99798-4583',
-        email: 'contato@pachbann.com',
+        email: 'contato@pachbann.com.br',
         localizacao: 'Sorocaba, São Paulo'
     },
     footer: {
@@ -417,6 +417,11 @@ function renderContato() {
     setEditable('contato', 'telefone', contato.telefone);
     setEditable('contato', 'email', contato.email);
     setEditable('contato', 'localizacao', contato.localizacao);
+
+    const emailLink = document.querySelector('[data-editable="contato"][data-field="email"]');
+    if (emailLink && contato.email) {
+        emailLink.setAttribute('href', `mailto:${contato.email}`);
+    }
 }
 
 function renderFooter() {
