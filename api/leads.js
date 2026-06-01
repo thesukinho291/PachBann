@@ -3,6 +3,7 @@ import { getSessionFromRequest } from './_auth.js';
 
 const CONTACT_TO_EMAIL = process.env.CONTACT_TO_EMAIL || 'contato@pachbann.com.br';
 const CONTACT_FROM_EMAIL = process.env.CONTACT_FROM_EMAIL || 'PachBann <onboarding@resend.dev>';
+const RESEND_EMAILS_URL = 'https://api.resend.com/emails';
 
 const cleanText = (value, maxLength) => String(value || '').trim().slice(0, maxLength);
 
@@ -34,13 +35,32 @@ function leadEmailHtml(lead) {
   `;
 }
 
+function leadEmailText(lead) {
+  return [
+    'Novo contato pelo site PachBann',
+    '',
+    `Nome: ${lead.nome}`,
+    `E-mail: ${lead.email}`,
+    `Telefone: ${lead.telefone || '-'}`,
+    `Tipo de projeto: ${lead.tipoProjeto || '-'}`,
+    '',
+    'Mensagem:',
+    lead.mensagem,
+  ].join('\n');
+}
+
 async function sendLeadEmail(lead) {
   if (!process.env.RESEND_API_KEY) {
     console.warn('RESEND_API_KEY nao configurada; lead salvo sem envio de email.');
     return { skipped: true };
   }
 
-  const response = await fetch('https://api.resend.com/emails', {
+  if (!CONTACT_TO_EMAIL || !CONTACT_FROM_EMAIL) {
+    console.warn('CONTACT_TO_EMAIL ou CONTACT_FROM_EMAIL nao configurado; lead salvo sem envio de email.');
+    return { skipped: true };
+  }
+
+  const response = await fetch(RESEND_EMAILS_URL, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
@@ -52,6 +72,7 @@ async function sendLeadEmail(lead) {
       reply_to: lead.email,
       subject: `Novo contato no site - ${lead.nome}`,
       html: leadEmailHtml(lead),
+      text: leadEmailText(lead),
     }),
   });
 
