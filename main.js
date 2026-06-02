@@ -17,35 +17,37 @@ const REMOTION_TIMELINE = {
 // ───────────────────────────────────────
 const defaultData = {
     hero: {
-        badge: 'Web Design & Desenvolvimento',
-        titulo: 'Transformamos sua visão em presença digital',
-        subtitulo: 'Criamos sites modernos, rápidos e eficientes que geram resultados reais para o seu negócio.'
+        badge: 'Tecnologia, Desenvolvimento e Soluções Digitais',
+        titulo: 'Desenvolvemos soluções digitais sob medida para o seu negócio',
+        subtitulo: 'Criamos sites profissionais, landing pages, sistemas web, aplicativos, automações, softwares personalizados e produtos digitais modernos, rápidos e escaláveis.'
     },
     sobre: {
         label: 'Sobre',
         titulo: 'Quem somos',
-        texto1: 'A PachBann Web Design nasceu em 2026 com uma missão clara: entregar sites modernos, rápidos e eficientes que realmente funcionam para os negócios dos nossos clientes.',
-        texto2: 'Combinamos design criativo com tecnologia de ponta para criar presença digital que converte visitantes em clientes.',
+        texto1: 'A PachBann nasceu em 2026 com a missão de transformar ideias e processos em soluções digitais funcionais. Desenvolvemos sites, sistemas web, aplicativos, automações, softwares personalizados, DevOps e produtos digitais sob medida para empresas que querem crescer com tecnologia.',
+        texto2: 'Atendemos empresas em Sorocaba, São Paulo e Brasil com estratégia, desenvolvimento e acompanhamento técnico para criar produtos digitais modernos, rápidos e escaláveis.',
         stat1Valor: '50',
         stat2Valor: '100'
     },
     features: [
-        { id: 'f1', titulo: 'Design Moderno', descricao: 'Interfaces limpas e elegantes que refletem a identidade da sua marca.' },
-        { id: 'f2', titulo: 'Performance', descricao: 'Sites otimizados para carregamento ultra-rápido e melhor experiência.' },
-        { id: 'f3', titulo: 'Responsivo', descricao: 'Perfeito em qualquer dispositivo, de mobile a desktop.' },
-        { id: 'f4', titulo: 'Seguro', descricao: 'Infraestrutura segura com proteção de dados garantida.' }
+        { id: 'f1', titulo: 'Estratégia digital', descricao: 'Planejamento técnico e comercial para transformar necessidades reais em soluções viáveis.' },
+        { id: 'f2', titulo: 'Performance', descricao: 'Produtos rápidos, responsivos e preparados para uma experiência fluida.' },
+        { id: 'f3', titulo: 'Escalabilidade', descricao: 'Estruturas pensadas para crescer junto com a operação e os objetivos do negócio.' },
+        { id: 'f4', titulo: 'Segurança', descricao: 'Boas práticas de desenvolvimento, deploy e proteção para ambientes digitais.' }
     ],
     servicos: {
         label: 'O que fazemos',
         titulo: 'Serviços'
     },
     servicosItems: [
-        { id: 's1', numero: '01', titulo: 'Sites Institucionais', descricao: 'Presença digital profissional para sua empresa. Transmita credibilidade e confiança.' },
-        { id: 's2', numero: '02', titulo: 'Landing Pages', descricao: 'Páginas de alta conversão para campanhas. Maximize seus resultados.' },
-        { id: 's3', numero: '03', titulo: 'Lojas Virtuais', descricao: 'E-commerce completo. Gerencie produtos, pedidos e pagamentos.' },
-        { id: 's4', numero: '04', titulo: 'Sistemas Web', descricao: 'Aplicações personalizadas. Automatize processos e otimize produtividade.' },
-        { id: 's5', numero: '05', titulo: 'UI/UX Design', descricao: 'Interfaces intuitivas. Cada interação é pensada para a melhor experiência.' },
-        { id: 's6', numero: '06', titulo: 'Manutenção', descricao: 'Sua plataforma sempre atualizada. Suporte técnico dedicado.' }
+        { id: 's1', numero: '01', titulo: 'Sites profissionais', descricao: 'Sites modernos para empresas que precisam se apresentar melhor, gerar confiança e facilitar o contato com clientes.' },
+        { id: 's2', numero: '02', titulo: 'Landing pages', descricao: 'Páginas objetivas para campanhas, lançamentos e captação de leads com foco em conversão.' },
+        { id: 's3', numero: '03', titulo: 'Sistemas web', descricao: 'Soluções online para organizar processos, dados, acessos e rotinas internas da operação.' },
+        { id: 's4', numero: '04', titulo: 'Aplicativos', descricao: 'Aplicações digitais planejadas para melhorar atendimento, produtividade e experiência do usuário.' },
+        { id: 's5', numero: '05', titulo: 'Automações', descricao: 'Fluxos automatizados para reduzir tarefas manuais, integrar ferramentas e ganhar eficiência.' },
+        { id: 's6', numero: '06', titulo: 'Softwares personalizados', descricao: 'Produtos sob medida para necessidades específicas que ferramentas prontas não resolvem bem.' },
+        { id: 's7', numero: '07', titulo: 'DevOps', descricao: 'Configuração de deploy, ambientes, monitoramento e processos para publicar com mais segurança.' },
+        { id: 's8', numero: '08', titulo: 'Produtos digitais sob medida', descricao: 'Da ideia ao MVP, desenvolvemos soluções digitais alinhadas ao modelo de negócio.' }
     ],
     portfolio: {
         label: 'Trabalhos recentes',
@@ -54,18 +56,18 @@ const defaultData = {
     portfolioItems: [
         {
             id: 'p5',
-            categoria: 'Institucional',
+            categoria: 'Site comercial',
             titulo: 'Fort Alimentos',
-            descricao: 'Site institucional com foco em credibilidade, apresentação clara da empresa e acesso rápido aos canais de contato.',
+            descricao: 'Sistema/site comercial com carrinho de produtos, login por CNPJ e pedido via WhatsApp para agilizar a jornada de compra.',
             cor: '#22c55e',
             link: 'https://fort-alimentos.vercel.app/',
             imagem: '/portfolio/fort-alimentos-cover.jpg'
         },
         {
             id: 'p6',
-            categoria: 'Landing Page',
+            categoria: 'Site institucional',
             titulo: 'Toninho Corredor',
-            descricao: 'Landing page direta para fortalecer presença digital, destacar trajetória e facilitar o primeiro contato.',
+            descricao: 'Site institucional com sistema de agendamento para atendimento no gabinete, aproximando público e atendimento político.',
             cor: '#ef4444',
             link: 'https://toninhocorredor.vercel.app/',
             imagem: '/portfolio/toninho-corredor-cover.jpg'
@@ -83,31 +85,31 @@ const defaultData = {
     contato: {
         label: 'Entre em contato',
         titulo: 'Fale Conosco',
-        subtitulo: 'Vamos discutir seu próximo projeto?',
+        subtitulo: 'Vamos discutir seu próximo projeto digital?',
         telefone: '(15) 99798-4583',
         email: 'contato@pachbann.com.br',
-        localizacao: 'Sorocaba, São Paulo'
+        localizacao: 'Sorocaba, São Paulo, Brasil'
     },
     footer: {
-        tagline: 'Transformamos sua visão em presença digital.'
+        tagline: 'Soluções digitais em Sorocaba para empresas que querem crescer com tecnologia.'
     }
 };
 
 const requiredPortfolioProjects = [
     {
         id: 'p5',
-        categoria: 'Institucional',
+        categoria: 'Site comercial',
         titulo: 'Fort Alimentos',
-        descricao: 'Site institucional com foco em credibilidade, apresentação clara da empresa e acesso rápido aos canais de contato.',
+        descricao: 'Sistema/site comercial com carrinho de produtos, login por CNPJ e pedido via WhatsApp para agilizar a jornada de compra.',
         cor: '#22c55e',
         link: 'https://fort-alimentos.vercel.app/',
         imagem: '/portfolio/fort-alimentos-cover.jpg'
     },
     {
         id: 'p6',
-        categoria: 'Landing Page',
+        categoria: 'Site institucional',
         titulo: 'Toninho Corredor',
-        descricao: 'Landing page direta para fortalecer presença digital, destacar trajetória e facilitar o primeiro contato.',
+        descricao: 'Site institucional com sistema de agendamento para atendimento no gabinete, aproximando público e atendimento político.',
         cor: '#ef4444',
         link: 'https://toninhocorredor.vercel.app/',
         imagem: '/portfolio/toninho-corredor-cover.jpg'
@@ -203,6 +205,49 @@ function sanitizeSiteData(data) {
     return fixBrokenPortugueseText(data);
 }
 
+function applySeoContentDefaults(data) {
+    const nextData = data && typeof data === 'object'
+        ? { ...data }
+        : JSON.parse(JSON.stringify(defaultData));
+
+    const oldHeroTitles = [
+        'Transformamos sua visão em presença digital',
+        'Transformamos sua visÃ£o em presenÃ§a digital'
+    ];
+    const hero = { ...(nextData.hero || {}) };
+    if (!hero.badge || hero.badge === 'Web Design & Desenvolvimento') hero.badge = defaultData.hero.badge;
+    if (!hero.titulo || oldHeroTitles.includes(hero.titulo)) hero.titulo = defaultData.hero.titulo;
+    if (!hero.subtitulo || hero.subtitulo.includes('sites modernos')) hero.subtitulo = defaultData.hero.subtitulo;
+    nextData.hero = hero;
+
+    const sobre = { ...(nextData.sobre || {}) };
+    if (!sobre.texto1 || sobre.texto1.includes('PachBann Web Design nasceu')) sobre.texto1 = defaultData.sobre.texto1;
+    if (!sobre.texto2 || sobre.texto2.includes('presença digital que converte')) sobre.texto2 = defaultData.sobre.texto2;
+    nextData.sobre = { ...defaultData.sobre, ...sobre };
+
+    const existingServices = Array.isArray(nextData.servicosItems) ? nextData.servicosItems : [];
+    const hasExpandedServices = defaultData.servicosItems.every((service) =>
+        existingServices.some((item) => item?.titulo?.toLowerCase() === service.titulo.toLowerCase())
+    );
+    if (!hasExpandedServices || existingServices.length < defaultData.servicosItems.length) {
+        nextData.servicosItems = defaultData.servicosItems.map((service) => ({ ...service }));
+    }
+
+    const contato = { ...(nextData.contato || {}) };
+    if (!contato.subtitulo || contato.subtitulo === 'Vamos discutir seu próximo projeto?') contato.subtitulo = defaultData.contato.subtitulo;
+    if (!contato.localizacao || contato.localizacao === 'Sorocaba, São Paulo') contato.localizacao = defaultData.contato.localizacao;
+    nextData.contato = { ...defaultData.contato, ...contato };
+
+    const footer = { ...(nextData.footer || {}) };
+    if (!footer.tagline || footer.tagline.includes('presença digital')) footer.tagline = defaultData.footer.tagline;
+    nextData.footer = footer;
+
+    nextData.features = defaultData.features.map((feature) => ({ ...feature }));
+    nextData.portfolioItems = withRequiredPortfolioItems(nextData.portfolioItems || defaultData.portfolioItems);
+
+    return nextData;
+}
+
 // ───────────────────────────────────────
 // CARREGAMENTO DE DADOS
 // ───────────────────────────────────────
@@ -210,7 +255,7 @@ function loadLocalData() {
     const saved = localStorage.getItem('pachbann_site_data');
     if (saved) {
         try {
-            siteData = sanitizeSiteData(JSON.parse(saved));
+            siteData = applySeoContentDefaults(sanitizeSiteData(JSON.parse(saved)));
             siteData.portfolioItems = withRequiredPortfolioItems(siteData.portfolioItems);
             localStorage.setItem('pachbann_site_data', JSON.stringify(siteData));
         } catch (e) {
@@ -237,7 +282,7 @@ async function loadSiteData() {
 
         const result = await response.json();
         if (result?.data) {
-            siteData = sanitizeSiteData(result.data);
+            siteData = applySeoContentDefaults(sanitizeSiteData(result.data));
             siteData.portfolioItems = withRequiredPortfolioItems(siteData.portfolioItems);
         } else {
             siteData = JSON.parse(JSON.stringify(defaultData));
@@ -381,12 +426,12 @@ function renderPortfolio() {
 function portfolioDescriptionFor(project) {
     const title = (project?.titulo || '').toLowerCase();
     if (title.includes('fort')) {
-        return 'Site institucional com foco em credibilidade, apresentação clara da empresa e acesso rápido aos canais de contato.';
+        return 'Sistema/site comercial com carrinho de produtos, login por CNPJ e pedido via WhatsApp para agilizar a jornada de compra.';
     }
     if (title.includes('toninho')) {
-        return 'Landing page direta para fortalecer presença digital, destacar trajetória e facilitar o primeiro contato.';
+        return 'Site institucional com sistema de agendamento para atendimento no gabinete, aproximando público e atendimento político.';
     }
-    return 'Projeto desenvolvido para unir visual profissional, navegação clara e uma experiência pronta para gerar confiança.';
+    return 'Projeto desenvolvido para resolver uma necessidade específica com experiência clara, tecnologia e foco em resultado.';
 }
 
 function renderEquipe() {
