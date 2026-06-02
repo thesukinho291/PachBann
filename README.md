@@ -1,91 +1,79 @@
 # PachBann Web Design
 
-A PachBann Web Design desenvolve sites modernos para empresas, marcas e profissionais que querem se apresentar melhor no digital. A proposta da marca é unir visual profissional, navegação clara e uma experiência pensada para gerar confiança desde o primeiro contato.
+Site institucional da PachBann Web Design, empresa especializada na criação de sites profissionais para negócios que desejam fortalecer sua presença digital com identidade, clareza e performance.
 
-## Objetivo do Site
+## Sobre o projeto
 
-O site institucional da PachBann apresenta a empresa, seus serviços, projetos publicados e formas de contato. Ele funciona como vitrine comercial da marca, mostrando de forma direta como a PachBann pode ajudar negócios a terem uma presença online mais forte, organizada e atual.
+O site apresenta a marca, os serviços oferecidos, projetos publicados, equipe e canais de contato. A experiência foi pensada para comunicar profissionalismo, facilitar a navegação e aproximar potenciais clientes da empresa.
 
-## Principais Seções
+## Seções
 
-- Início, com apresentação da marca e chamada principal.
-- Sobre, com posicionamento e visão da empresa.
-- Serviços, com as soluções oferecidas pela PachBann.
-- Portfólio, com projetos reais publicados.
-- Equipe, com os profissionais envolvidos na marca.
-- Contato, para novos clientes iniciarem uma conversa.
+- **Início:** apresentação da PachBann e chamada principal.
+- **Sobre:** posicionamento, proposta de valor e visão da empresa.
+- **Serviços:** soluções digitais oferecidas aos clientes.
+- **Portfólio:** projetos desenvolvidos e publicados.
+- **Equipe:** profissionais envolvidos na operação.
+- **Contato:** formulário para novos orçamentos e solicitações.
+- **Painel administrativo:** área restrita para gestão de conteúdo e leads.
 
-## Tecnologias Usadas
+## Tecnologias
 
-O projeto foi desenvolvido com HTML, CSS e JavaScript, com publicação pela Vercel. A estrutura prioriza performance, responsividade e manutenção simples da experiência visual.
+- HTML
+- CSS
+- JavaScript
+- Vite
+- Node.js
+- Neon/Postgres
+- Resend
 
-## Status do Projeto
+## Produção
 
-Publicado e em evolução contínua, com melhorias visuais, ajustes de conteúdo e novas seções sendo incorporadas conforme a marca cresce.
+O projeto está publicado em:
 
-## Site Publicado
+https://pachbann.com.br/
 
-https://pach-bann.vercel.app/
+## Estrutura
 
-## Rodando em VPS
+- `index.html`: página principal do site.
+- `login.html`: acesso ao painel administrativo.
+- `main.js`: interações, conteúdo dinâmico e integrações do site.
+- `login.js`: autenticação do painel administrativo.
+- `api/`: rotas de login, leads e conteúdo.
+- `db/schema.sql`: estrutura inicial do banco de dados.
+- `public/`: arquivos públicos e mídia.
 
-O projeto agora pode rodar em uma VPS com Node.js servindo o build estatico e as rotas `/api/*`.
-
-Na VPS:
+## Execução local
 
 ```bash
-git pull
+npm install
+npm run dev
+```
+
+## Build
+
+```bash
+npm run build
+```
+
+## VPS
+
+Em produção, o projeto roda em uma VPS com Node.js servindo o build estático e as rotas `/api/*`.
+
+Variáveis de ambiente necessárias:
+
+- `PORT`: porta local usada pelo servidor Node.
+- `DATABASE_URL`: conexão com o banco Neon/Postgres.
+- `ADMIN_JWT_SECRET`: chave privada para assinatura da sessão administrativa.
+- `RESEND_API_KEY`: chave da API do Resend.
+- `CONTACT_TO_EMAIL`: e-mail que recebe os contatos do site.
+- `CONTACT_FROM_EMAIL`: remetente usado nos envios pelo Resend.
+
+Comandos principais:
+
+```bash
 npm install
 npm run build
-cp .env.example .env
-nano .env
 npm start
 ```
 
-Variaveis obrigatorias no `.env`:
-
-- `PORT`: porta local do Node, por exemplo `3000`.
-- `DATABASE_URL`: conexao do Neon/Postgres.
-- `ADMIN_JWT_SECRET`: chave grande e aleatoria para assinar o cookie de admin.
-- `RESEND_API_KEY`: chave da API do Resend. Sem ela, o lead e salvo, mas o email nao e enviado.
-- `CONTACT_TO_EMAIL` e `CONTACT_FROM_EMAIL`: emails usados no formulario de contato.
-
-### Resend
-
-No Resend, configure um dominio verificado e use esse dominio no remetente:
-
-```env
-RESEND_API_KEY="re_sua_chave_aqui"
-CONTACT_TO_EMAIL="contato@pachbann.com.br"
-CONTACT_FROM_EMAIL="PachBann <contato@pachbann.com.br>"
-```
-
-Depois de editar o `.env` na VPS, teste o envio:
-
-```bash
-npm run resend:test
-```
-
-Se o teste passar, o formulario do site tambem consegue enviar email. Se falhar com erro de remetente, confira se o dominio do `CONTACT_FROM_EMAIL` esta verificado no Resend.
-
-Para deixar em producao, use um gerenciador de processo como PM2:
-
-```bash
-npm install -g pm2
-pm2 start npm --name pachbann -- start
-pm2 save
-pm2 startup
-```
-
-No Nginx, aponte o dominio para a porta do Node:
-
-```nginx
-location / {
-  proxy_pass http://127.0.0.1:3000;
-  proxy_http_version 1.1;
-  proxy_set_header Host $host;
-  proxy_set_header X-Real-IP $remote_addr;
-  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-  proxy_set_header X-Forwarded-Proto $scheme;
-}
-```
+Para manter o processo ativo em produção, utilize PM2 ou outro gerenciador de processos.
